@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: load-generator
+  labels:
+    app.kubernetes.io/name: load-generator
+    app.kubernetes.io/part-of: ghcp-in-the-cloud
+spec:
+  # Off by default. Start the HPA demo with:
+  #   kubectl scale deployment/load-generator --replicas=1 -n cloud-copilot-demo
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: load-generator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: load-generator
+        app.kubernetes.io/part-of: ghcp-in-the-cloud
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: load
+          # Same image as the app, so no extra registry is needed. It only calls the
+          # unauthenticated /healthz endpoint: CPU rises without any model calls (or cost).
+          image: cloud-copilot-demo
+          command: ["python", "-c"]
+          args:
+            - |
+              import threading
+              import urllib.request
+
+              def hit():
+                  while True:
+                      try:
+                          urllib.request.urlopen("http://cloud-copilot-demo/healthz", timeout=5).read()
+                      except OSError:
+                          pass
+
+              for _ in range(12):
+                  threading.Thread(target=hit, daemon=True).start()
+              threading.Event().wait()
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 10001
+            capabilities:
+              drop:
+                - ALL

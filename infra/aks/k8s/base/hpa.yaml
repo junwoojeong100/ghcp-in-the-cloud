@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cloud-copilot-demo
+  labels:
+    app.kubernetes.io/name: cloud-copilot-demo
+    app.kubernetes.io/part-of: ghcp-in-the-cloud
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cloud-copilot-demo
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+  behavior:
+    scaleDown:
+      # Shorter than the 300 s default so scale-in is visible during a talk.
+      stabilizationWindowSeconds: 60

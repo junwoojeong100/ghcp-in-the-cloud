@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cloud-copilot-demo
+  labels:
+    app.kubernetes.io/name: cloud-copilot-demo
+    app.kubernetes.io/part-of: ghcp-in-the-cloud
+spec:
+  # Voluntary disruptions (node drain, cluster upgrade) never take the last pod away.
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloud-copilot-demo

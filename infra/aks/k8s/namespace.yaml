@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloud-copilot-demo
+  labels:
+    app.kubernetes.io/part-of: ghcp-in-the-cloud
+    # Pod Security Admission: pods that are not hardened are rejected.
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
