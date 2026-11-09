@@ -8,6 +8,7 @@ param foundryAccountName string
 @description('Object (principal) ID of the managed identity that calls the model.')
 param principalId string
 
+@description('Type of the principal in principalId.')
 @allowed([
   'ServicePrincipal'
   'User'

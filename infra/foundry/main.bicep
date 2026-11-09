@@ -59,6 +59,7 @@ param claudeIndustry string = 'technology'
 @description('Optional: object ID of a user (or service principal) that gets the Cognitive Services User role, so `az login` + keyless calls work locally.')
 param principalId string = ''
 
+@description('Type of the principal in principalId.')
 @allowed([
   'User'
   'ServicePrincipal'
@@ -69,6 +70,7 @@ param principalType string = 'User'
 @description('Set to true to turn API keys off entirely and allow Microsoft Entra ID only. The quick-start API key path of the app stops working.')
 param disableLocalAuth bool = false
 
+@description('Tags on every resource. scripts/cleanup.sh only deletes resource groups that carry demo=ghcp-in-the-cloud.')
 param tags object = {
   demo: 'ghcp-in-the-cloud'
 }
@@ -157,6 +159,11 @@ output foundryResource string = account.name
 @description('Value for FOUNDRY_MODEL (the deployment name).')
 output deploymentName string = claude.name
 
+@description('Resource group of the Foundry account.')
 output resourceGroupName string = resourceGroup().name
+
+@description('Base URL of the Anthropic-compatible Claude endpoint.')
 output claudeBaseUrl string = 'https://${account.name}.services.ai.azure.com/anthropic'
+
+@description('Endpoint of the Foundry project.')
 output projectEndpoint string = 'https://${account.name}.services.ai.azure.com/api/projects/${project.name}'

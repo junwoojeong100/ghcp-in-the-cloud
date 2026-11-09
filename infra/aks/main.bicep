@@ -10,14 +10,17 @@ targetScope = 'resourceGroup'
 @maxLength(12)
 param namePrefix string = 'ccd'
 
+@description('Region of all resources. Defaults to the region of the resource group.')
 param location string = resourceGroup().location
 
 @description('VM size of the node pool. Pick another size if this one is not available in your region or subscription.')
 param nodeVmSize string = 'Standard_D2s_v5'
 
+@description('Minimum node count of the cluster autoscaler.')
 @minValue(1)
 param nodeMinCount int = 1
 
+@description('Maximum node count of the cluster autoscaler.')
 @minValue(1)
 param nodeMaxCount int = 3
 
@@ -30,6 +33,7 @@ param kubernetesServiceAccount string = 'cloud-copilot-demo'
 @description('Optional: object ID of the person who runs the demo. Gets cluster admin through Azure RBAC.')
 param principalId string = ''
 
+@description('Type of the principal in principalId.')
 @allowed([
   'User'
   'ServicePrincipal'
@@ -43,6 +47,7 @@ param foundryResource string = ''
 @description('Resource group of the Foundry account.')
 param foundryResourceGroup string = resourceGroup().name
 
+@description('Tags on every resource. scripts/cleanup.sh only deletes resource groups that carry demo=ghcp-in-the-cloud.')
 param tags object = {
   demo: 'ghcp-in-the-cloud'
 }
@@ -182,10 +187,23 @@ module foundryAccess '../modules/foundry-access.bicep' = if (!empty(foundryResou
   }
 }
 
+@description('Name of the AKS cluster.')
 output clusterName string = cluster.name
+
+@description('Name of the container registry.')
 output registryName string = registry.name
+
+@description('Login server of the container registry.')
 output registryLoginServer string = registry.properties.loginServer
+
+@description('Client ID of the workload identity; it goes into the ServiceAccount annotation.')
 output workloadClientId string = workloadIdentity.properties.clientId
+
+@description('Object ID of the workload identity.')
 output workloadPrincipalId string = workloadIdentity.properties.principalId
+
+@description('OIDC issuer URL of the cluster, trusted by the federated credential.')
 output oidcIssuerUrl string = cluster.properties.oidcIssuerProfile.issuerURL
+
+@description('Microsoft Entra tenant ID.')
 output tenantId string = tenant().tenantId

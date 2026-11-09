@@ -12,6 +12,7 @@ targetScope = 'resourceGroup'
 @maxLength(12)
 param namePrefix string = 'ccd'
 
+@description('Region of all resources. Defaults to the region of the resource group.')
 param location string = resourceGroup().location
 
 @description('Container app name. It is also the first part of the public host name.')
@@ -41,6 +42,7 @@ param foundryResourceGroup string = resourceGroup().name
 @description('Foundry deployment name of the model.')
 param foundryModel string = 'claude-sonnet-5-5'
 
+@description('Reasoning effort the app requests from the model.')
 @allowed([
   'low'
   'medium'
@@ -55,9 +57,11 @@ param foundryEffort string = 'max'
 @maxValue(10000)
 param mockLatencyMs int = 1000
 
+@description('Minimum replicas. 0 lets the app scale to zero when idle; the next request starts a replica.')
 @minValue(0)
 param minReplicas int = 0
 
+@description('Maximum replicas the HTTP scale rule can add.')
 @minValue(1)
 param maxReplicas int = 5
 
@@ -65,6 +69,7 @@ param maxReplicas int = 5
 @minValue(1)
 param concurrentRequests int = 5
 
+@description('Tags on every resource. scripts/cleanup.sh only deletes resource groups that carry demo=ghcp-in-the-cloud.')
 param tags object = {
   demo: 'ghcp-in-the-cloud'
 }
@@ -274,12 +279,29 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = if (deployApp) {
   ]
 }
 
+@description('Name of the container registry.')
 output registryName string = registry.name
+
+@description('Login server of the container registry.')
 output registryLoginServer string = registry.properties.loginServer
+
+@description('Repository name of the app image inside the registry.')
 output imageRepository string = imageRepository
+
+@description('Name of the Container Apps environment.')
 output environmentName string = environment.name
+
+@description('Client ID of the managed identity the app uses.')
 output identityClientId string = identity.properties.clientId
+
+@description('Object ID of the managed identity the app uses.')
 output identityPrincipalId string = identity.properties.principalId
+
+@description('Name of the container app.')
 output appName string = appName
+
+@description('Public HTTPS address of the app. Empty until the app is deployed.')
 output appUrl string = deployApp ? 'https://${app!.properties.configuration.ingress.fqdn}' : ''
+
+@description('Name of the newest revision. Empty until the app is deployed.')
 output latestRevisionName string = deployApp ? app!.properties.latestRevisionName : ''
