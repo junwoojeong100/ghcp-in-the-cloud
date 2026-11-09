@@ -1,0 +1,141 @@
+name: Deploy to AKS
+
+# Builds the image from this commit, pushes it to Azure Container Registry and rolls it out to the
+# AKS Deployment with a rolling update. GitHub stores no Azure password or key: the job trades its
+# short-lived GitHub OIDC token for an Azure token (set up once by scripts/setup-github-oidc.sh),
+# and the `azure-demo` environment can require a reviewer before anything touches Azure.
+# Run scripts/deploy-aks.sh once first: it creates the cluster, the namespace and the manifests.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-aks
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: azure-demo
+    permissions:
+      id-token: write # lets azure/login exchange the GitHub OIDC token for an Azure token
+      contents: read
+      attestations: write # stores the signed build provenance of the image
+    env:
+      AKS_ACR_NAME: ${{ vars.AKS_ACR_NAME }}
+      AKS_RESOURCE_GROUP: ${{ vars.AKS_RESOURCE_GROUP }}
+      AKS_CLUSTER_NAME: ${{ vars.AKS_CLUSTER_NAME }}
+      KUBE_NAMESPACE: cloud-copilot-demo
+    steps:
+      - name: Check the environment variables
+        env:
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          missing=()
+          for name in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID AKS_ACR_NAME AKS_RESOURCE_GROUP AKS_CLUSTER_NAME; do
+            [ -n "${!name:-}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::azure-demo 환경에 변수가 없습니다: ${missing[*]}. 먼저 scripts/setup-github-oidc.sh --apply 를 실행하세요."
+            exit 1
+          fi
+
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Log in to Azure with OIDC
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Prepare the image reference
+        id: image
+        run: |
+          {
+            echo "tag=${GITHUB_SHA::7}"
+            echo "name=$AKS_ACR_NAME.azurecr.io/cloud-copilot-demo"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Log in to the registry
+        run: az acr login --name "$AKS_ACR_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # APP_VERSION is baked into the image, so the UI shows exactly which commit answers a request.
+      - name: Build and push the image
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: app/Dockerfile
+          push: true
+          provenance: false
+          tags: ${{ steps.image.outputs.name }}:${{ steps.image.outputs.tag }}
+          build-args: APP_VERSION=${{ steps.image.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max,ignore-error=true
+
+      # Artifact attestations are free for public repositories; private ones need GitHub Enterprise Cloud.
+      - name: Attest the build provenance
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-name: ${{ steps.image.outputs.name }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+
+      - name: Install kubelogin
+        uses: azure/use-kubelogin@0ce7c36141aa27d4934872cf00b0120804c98a29 # v1.3
+        with:
+          kubelogin-version: v0.2.22
+
+      # The cluster has local accounts disabled, so kubectl signs in with the Azure CLI token.
+      - name: Connect to the cluster
+        run: |
+          az aks get-credentials --resource-group "$AKS_RESOURCE_GROUP" --name "$AKS_CLUSTER_NAME" \
+            --file "$RUNNER_TEMP/kubeconfig" --only-show-errors
+          kubelogin convert-kubeconfig --login azurecli --kubeconfig "$RUNNER_TEMP/kubeconfig"
+          echo "KUBECONFIG=$RUNNER_TEMP/kubeconfig" >> "$GITHUB_ENV"
+
+      - name: Roll out the new image
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}:${{ steps.image.outputs.tag }}
+        run: |
+          kubectl --namespace "$KUBE_NAMESPACE" set image deployment/cloud-copilot-demo app="$IMAGE"
+          kubectl --namespace "$KUBE_NAMESPACE" rollout status deployment/cloud-copilot-demo --timeout=300s
+
+      - name: Summarize
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}:${{ steps.image.outputs.tag }}
+        run: |
+          pods="$(kubectl --namespace "$KUBE_NAMESPACE" get pods --selector app.kubernetes.io/name=cloud-copilot-demo --output wide)"
+          {
+            echo "### AKS 배포 결과"
+            echo
+            echo "| 항목 | 값 |"
+            echo "| --- | --- |"
+            echo "| 클러스터 | $AKS_CLUSTER_NAME ($AKS_RESOURCE_GROUP) |"
+            echo "| 이미지 | $IMAGE |"
+            echo "| 커밋 | $GITHUB_SHA |"
+            echo
+            echo "롤링 업데이트가 끝난 파드:"
+            echo
+            printf '~~~\n%s\n~~~\n' "$pods"
+            echo
+            echo "접속은 kubectl port-forward 로 합니다. 자세한 방법은 demos/06-aks 를 보세요."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,70 @@
+// Dev container / GitHub Codespaces configuration for the Cloud Copilot Demo.
+// Spec: https://containers.dev/implementors/json_reference/
+{
+  "name": "Cloud Copilot Demo",
+  // Python 3.12 is what the app, CI and the Dockerfile use.
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
+
+  "features": {
+    // Azure CLI plus Bicep, for the infra/ templates and the deploy scripts.
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "installBicep": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    // kubectl for the AKS demo; Helm and minikube are not used.
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "helm": "none",
+      "minikube": "none"
+    },
+    // Uses the host's Docker engine to build the app image without a nested daemon.
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+
+  // The app listens on 8080 (python -m app.server).
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Cloud Copilot Demo",
+      "onAutoForward": "notify"
+    }
+  },
+
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "16gb"
+  },
+
+  // Installs app/requirements.txt and prints the next steps. No credentials are stored here.
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  // Codespaces offers this secret on "New with options". Nothing is stored in the repository.
+  "secrets": {
+    "DEMO_PASSWORD": {
+      "description": "데모 앱 로그인 비밀번호입니다(사용자 이름: demo). 시연용 임시 값을 입력하세요. 비워 두면 앱을 실행할 때 직접 지정합니다.",
+      "documentationUrl": "https://github.com/junwoojeong100/ghcp-in-the-cloud/blob/main/demos/02-github-repo/README.md"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-python.python",
+        "ms-azuretools.vscode-bicep",
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-docker",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    },
+    "codespaces": {
+      "openFiles": [
+        "demos/02-github-repo/README.md"
+      ]
+    }
+  }
+}

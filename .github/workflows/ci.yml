@@ -1,0 +1,141 @@
+name: CI
+
+# Runs on every pull request and on main. It needs no Azure account or secrets, so the whole
+# pipeline can be demonstrated from a fresh fork. Job names double as the required status
+# checks in .github/rulesets/main-protection.json, so rename them in both places together.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push to the same pull request replaces the run that is still going.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: app/requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --requirement app/requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s app/tests -v
+
+  container:
+    name: Container build and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the image
+        env:
+          APP_VERSION: ${{ github.sha }}
+        run: docker build --file app/Dockerfile --build-arg "APP_VERSION=${APP_VERSION::7}" --tag cloud-copilot-demo:ci .
+
+      # The same restrictions the platforms apply later: read-only filesystem, no capabilities.
+      # LLM_BACKEND=mock keeps the test offline and free.
+      - name: Start the container
+        run: |
+          DEMO_PASSWORD="$(python3 -c 'import secrets; print(secrets.token_urlsafe(18))')"
+          echo "::add-mask::$DEMO_PASSWORD"
+          echo "DEMO_PASSWORD=$DEMO_PASSWORD" >> "$GITHUB_ENV"
+          export DEMO_PASSWORD
+          docker run --detach --name demo --publish 127.0.0.1:8080:8080 \
+            --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges \
+            --env LLM_BACKEND=mock --env DEMO_PASSWORD \
+            cloud-copilot-demo:ci
+
+      - name: Smoke test
+        run: scripts/smoke-test.sh http://127.0.0.1:8080 --expect-backend mock
+
+      - name: Check that the container runs as a non-root user
+        run: |
+          uid="$(docker exec demo id -u)"
+          echo "uid=$uid"
+          test "$uid" != 0
+
+      - name: Show container logs
+        if: failure()
+        run: docker logs demo
+
+  iac:
+    name: IaC validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install kubeconform
+        run: scripts/install-dev-tools.sh kubeconform
+
+      - name: Build the Bicep templates
+        run: |
+          while IFS= read -r template; do
+            echo "::group::bicep build $template"
+            az bicep build --file "$template" --stdout > /dev/null
+            echo "::endgroup::"
+          done < <(find infra -name '*.bicep' | sort)
+
+      - name: Validate the Kubernetes manifests
+        env:
+          IMAGE_REPOSITORY: example.azurecr.io/cloud-copilot-demo
+          IMAGE_TAG: ci
+          WORKLOAD_CLIENT_ID: 00000000-0000-0000-0000-000000000000
+        run: |
+          kubeconform -strict -summary infra/aks/k8s/namespace.yaml
+          scripts/render-aks-manifests.sh | kubeconform -strict -summary
+          FOUNDRY_RESOURCE=example-foundry scripts/render-aks-manifests.sh | kubeconform -strict -summary
+
+  lint:
+    name: Workflow and script lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install actionlint and hadolint
+        run: scripts/install-dev-tools.sh actionlint hadolint
+
+      # actionlint also runs shellcheck on the run: blocks of every workflow.
+      - name: Lint the workflows
+        run: actionlint -color
+
+      - name: Lint the shell scripts
+        run: shellcheck scripts/*.sh scripts/lib/*.sh
+
+      - name: Lint the Dockerfile
+        run: hadolint app/Dockerfile

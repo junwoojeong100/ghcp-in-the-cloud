@@ -1,0 +1,30 @@
+# DEMO ONLY: intentionally unsafe workflow. Never merge it.
+#
+# The issue title is controlled by whoever opens the issue, and the expression below pastes
+# it straight into a shell script (expression injection).
+# Expected CodeQL finding: actions/code-injection/critical.
+# Safe pattern: pass the value through an env variable and read it as "$TITLE" in the script.
+name: Issue triage (DEMO - unsafe)
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    name: Label new issue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pick a label from the title
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="${{ github.event.issue.title }}"
+          case "$TITLE" in
+            *bug* | *오류*) LABEL=bug ;;
+            *) LABEL=triage ;;
+          esac
+          gh issue edit "${{ github.event.issue.number }}" --repo "$GITHUB_REPOSITORY" --add-label "$LABEL"

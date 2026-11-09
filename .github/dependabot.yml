@@ -1,0 +1,130 @@
+# Dependabot version updates for every manifest in this repository.
+# Reference: https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
+#
+# - Minor and patch updates are grouped into one pull request per ecosystem;
+#   major updates arrive as separate pull requests so they get a closer review.
+# - `cooldown` waits a few days after a release before proposing it. It does not
+#   delay security updates, which Dependabot opens on its own.
+# - The `dependencies` label is created by scripts/apply-repo-settings.sh.
+#   Dependabot ignores labels that do not exist in the repository.
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(actions)"
+    labels:
+      - dependencies
+    groups:
+      actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: pip
+    directory: "/app"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(app)"
+    labels:
+      - dependencies
+    groups:
+      app-python-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Tracks the pinned python-pptx in slides/requirements.txt (deck generator only; the demo app does not use it).
+  - package-ecosystem: pip
+    directory: "/slides"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(slides)"
+    labels:
+      - dependencies
+    groups:
+      slides-python-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: docker
+    directory: "/app"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(docker)"
+    labels:
+      - dependencies
+    # The demo targets Python 3.12 (see .github/copilot-instructions.md), so do not
+    # propose moving the base image to a newer Python minor or major line.
+    ignore:
+      - dependency-name: python
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+    groups:
+      docker-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Finds .devcontainer/devcontainer.json and updates the pinned feature versions.
+  - package-ecosystem: devcontainers
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    open-pull-requests-limit: 3
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(devcontainer)"
+    labels:
+      - dependencies
+    groups:
+      devcontainer-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
