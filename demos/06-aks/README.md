@@ -203,7 +203,7 @@ EOF
 scripts/cleanup.sh aks             # AKS 리소스 그룹을 지웁니다 (확인 질문 있음)
 ```
 
-`demo=ghcp-in-the-cloud` 태그가 없는 리소스 그룹은 지우지 않습니다. 부하 생성기가 켜져 있다면 먼저 `kubectl scale deployment/load-generator --replicas=0 --namespace cloud-copilot-demo`로 끕니다. v2 상태로 시연을 끝냈다면 `kubectl rollout undo deployment/cloud-copilot-demo --namespace cloud-copilot-demo`로 v1로 되돌리면 되고, 클러스터를 다시 만들 필요는 없습니다. `scripts/deploy-aks.sh`를 다시 실행할 때는 `DEMO_PASSWORD`를 지정하세요. 지정하지 않으면 새 비밀번호가 만들어집니다. 로컬 `kubeconfig`에 남은 컨텍스트는 `kubectl config get-contexts`로 확인해 `kubectl config delete-context <이름>`으로 지웁니다.
+`demo=ghcp-in-the-cloud` 태그가 없는 리소스 그룹은 지우지 않습니다. 부하 생성기가 켜져 있다면 먼저 `kubectl scale deployment/load-generator --replicas=0 --namespace cloud-copilot-demo`로 끕니다. v2 상태로 시연을 끝냈다면 `kubectl rollout undo deployment/cloud-copilot-demo --namespace cloud-copilot-demo`로 v1로 되돌리면 되고, 클러스터를 다시 만들 필요는 없습니다. `scripts/deploy-aks.sh`를 다시 실행할 때는 `DEMO_PASSWORD`를 지정하세요. 지정하지 않으면 새 비밀번호가 만들어지고, 스크립트가 파드를 다시 시작해 새 비밀번호를 적용합니다. 로컬 `kubeconfig`에 남은 컨텍스트는 `kubectl config get-contexts`로 확인해 `kubectl config delete-context <이름>`으로 지웁니다.
 
 ## 문제 해결
 

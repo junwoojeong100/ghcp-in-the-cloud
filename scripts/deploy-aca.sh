@@ -148,9 +148,26 @@ app_count="$(az resource list --resource-group "$RESOURCE_GROUP" --resource-type
   --query "[?name=='$APP_NAME'] | length(@)" --output tsv)"
 initial_suffix=''
 [[ "$app_count" == 0 ]] && initial_suffix="$REVISION_SUFFIX"
+# 실행 중인 복제본은 시작할 때만 Secret 을 읽으므로, 비밀번호가 바뀌면 아래에서 활성 리비전을 다시 시작합니다.
+previous_password=''
+if [[ "$app_count" != 0 ]]; then
+  previous_password="$(az containerapp secret show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
+    --secret-name demo-password --query value --output tsv --only-show-errors 2>/dev/null || true)"
+fi
 deploy_phase true "$initial_suffix"
 app_url="$(deployment_output "$RESOURCE_GROUP" "$DEPLOYMENT_NAME" appUrl)"
 revision="$(deployment_output "$RESOURCE_GROUP" "$DEPLOYMENT_NAME" latestRevisionName)"
+
+if [[ -n "$previous_password" && "$previous_password" != "$DEMO_PASSWORD" ]]; then
+  log "비밀번호가 바뀌어 활성 리비전을 다시 시작합니다."
+  while IFS= read -r active_revision; do
+    [[ -n "$active_revision" ]] || continue
+    az containerapp revision restart --resource-group "$RESOURCE_GROUP" --name "$APP_NAME" \
+      --revision "$active_revision" --only-show-errors --output none ||
+      warn "리비전 $active_revision 을 다시 시작하지 못했습니다. az containerapp revision restart 로 직접 다시 시작하세요."
+  done < <(az containerapp revision list --resource-group "$RESOURCE_GROUP" --name "$APP_NAME" \
+    --query "[?properties.active].name" --output tsv --only-show-errors)
+fi
 
 log "앱이 응답하길 기다리는 중... (최소 복제본이 0 이면 첫 요청에 시간이 걸립니다)"
 wait_for_http "$app_url/healthz" 36 5 || die "앱이 응답하지 않습니다: $app_url/healthz (az containerapp logs show -n $APP_NAME -g $RESOURCE_GROUP)"

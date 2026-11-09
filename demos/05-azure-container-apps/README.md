@@ -145,7 +145,7 @@ Foundry 백엔드에서는 `/api/chat` 부하가 모델 호출 비용을 만들�
 scripts/cleanup.sh aca             # Container Apps 리소스 그룹을 지웁니다 (확인 질문 있음)
 ```
 
-`demo=ghcp-in-the-cloud` 태그가 없는 리소스 그룹은 지우지 않습니다. 카나리 상태만 초기화하려면 `DEMO_PASSWORD`를 설정한 채 `scripts/deploy-aca.sh`를 다시 실행하세요(같은 비밀번호를 그대로 씁니다). 분할이 초기화되고 최신 리비전이 100%를 받습니다.
+`demo=ghcp-in-the-cloud` 태그가 없는 리소스 그룹은 지우지 않습니다. 카나리 상태만 초기화하려면 `DEMO_PASSWORD`를 설정한 채 `scripts/deploy-aca.sh`를 다시 실행하세요(같은 비밀번호를 그대로 씁니다). 비밀번호를 바꿔 실행하면 활성 리비전을 다시 시작해 적용합니다. 분할이 초기화되고 최신 리비전이 100%를 받습니다.
 
 ## 문제 해결
 

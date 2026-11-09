@@ -168,7 +168,7 @@ cmd_deploy() {
     log "처음 실행: 현재 리비전 $revision 을 100% 로 고정하고 blue 레이블을 붙입니다."
     az containerapp ingress traffic set --resource-group "$RESOURCE_GROUP" --name "$APP_NAME" --only-show-errors \
       --revision-weight "$revision=100" --output none
-    az_app revision label add --label blue --revision "$revision" --output none
+    az_app revision label add --label blue --revision "$revision" --yes --output none
     prod_label=blue
   else
     for row in "${labeled[@]}"; do
@@ -195,7 +195,8 @@ cmd_deploy() {
 
   log "새 리비전 만드는 중: $new_revision (APP_VERSION=$version)"
   az_app update --revision-suffix "$version" --set-env-vars "APP_VERSION=$version" --output none
-  az_app revision label add --label "$target" --revision "$new_revision" --output none
+  # --yes moves a label that still sits on an older revision (0% traffic) instead of prompting.
+  az_app revision label add --label "$target" --revision "$new_revision" --yes --output none
 
   local url
   url="$(label_url "$target")"

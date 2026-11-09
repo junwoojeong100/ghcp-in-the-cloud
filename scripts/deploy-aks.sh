@@ -142,6 +142,8 @@ done
 
 log "4/4 매니페스트 적용"
 kubectl apply --filename "$REPO_ROOT/infra/aks/k8s/namespace.yaml"
+# 실행 중인 파드는 시작할 때만 Secret 을 읽으므로, 비밀번호가 바뀌면 아래에서 파드를 다시 시작합니다.
+previous_password="$(kubectl get secret cloud-copilot-demo --namespace "$NAMESPACE" --output jsonpath='{.data.password}' 2>/dev/null || true)"
 printf '%s' "$DEMO_PASSWORD" |
   kubectl create secret generic cloud-copilot-demo --namespace "$NAMESPACE" \
     --from-file=password=/dev/stdin --dry-run=client --output yaml |
@@ -156,6 +158,10 @@ IMAGE_REPOSITORY="$login_server/cloud-copilot-demo" \
   "$REPO_ROOT/scripts/render-aks-manifests.sh" |
   kubectl apply --filename -
 
+if [[ -n "$previous_password" && "$previous_password" != "$(printf '%s' "$DEMO_PASSWORD" | base64 | tr -d '\n')" ]]; then
+  log "비밀번호가 바뀌어 파드를 다시 시작합니다."
+  kubectl rollout restart deployment/cloud-copilot-demo --namespace "$NAMESPACE"
+fi
 kubectl rollout status deployment/cloud-copilot-demo --namespace "$NAMESPACE" --timeout=300s
 
 cat <<EOF
