@@ -54,7 +54,7 @@ updates:
           - minor
           - patch
 
-  # Needs slides/requirements.txt; Dependabot reports an error for this entry until it exists.
+  # Tracks the pinned python-pptx in slides/requirements.txt (deck generator only; the demo app does not use it).
   - package-ecosystem: pip
     directory: "/slides"
     schedule:

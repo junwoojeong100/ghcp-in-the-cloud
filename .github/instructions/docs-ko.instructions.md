@@ -21,5 +21,5 @@ applyTo: 'demos/**/*.md,README.md,DEMO_GUIDE_KO.md'
 - Every command, path, script and env var in a document must exist in the repo or be created by a documented step. Check with `ls` or `grep` before finishing.
 - Do not state benchmark numbers, prices, SLAs or "x% faster". Describe features qualitatively. Say "UI 메뉴 이름은 변경될 수 있음" once per document instead of hedging every step.
 - No secrets or token-shaped strings, no `TODO` text and no invented URLs. Use `<owner>`-style placeholders only where unavoidable, and say so.
-- When behavior, commands or env vars change, update the matching demo guide and `slides/` in the same PR.
+- When behavior, commands or env vars change, update the matching demo guide and `slides/` in the same PR. `slides/demo-presentation-ko.pptx` and `slides/demo-presentation-ko.md` are generated: edit the data in `slides/build_deck.py` and run `python slides/build_deck.py` instead of editing the outputs.
 - `demos/01-github-copilot/issues/*.md` are issue bodies, not guides: they start with a `# [Demo] ...` title line and use the same headings as `.github/ISSUE_TEMPLATE/copilot-demo.yml`.
