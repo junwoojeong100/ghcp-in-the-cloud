@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-copilot-demo
+  labels:
+    app: cloud-copilot-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-copilot-demo
+  template:
+    metadata:
+      labels:
+        app: cloud-copilot-demo
+    spec:
+      containers:
+        - name: demo
+          image: ghcr.io/OWNER/REPOSITORY:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: FOUNDRY_RESOURCE
+              value: "YOUR_FOUNDRY_RESOURCE_NAME"
+            - name: FOUNDRY_MODEL
+              value: "claude-sonnet-5-5"
+            - name: ANTHROPIC_FOUNDRY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: foundry-credentials
+                  key: api-key
+            - name: DEMO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: foundry-credentials
+                  key: demo-password
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

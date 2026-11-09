@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cloud Copilot Demo</title>
+    <style>
+      body { font: 16px system-ui, sans-serif; margin: 3rem auto; max-width: 760px; padding: 0 1rem; color: #172033; }
+      textarea { box-sizing: border-box; display: block; min-height: 7rem; width: 100%; margin: 1rem 0; padding: .8rem; }
+      button { background: #2457d6; border: 0; border-radius: .3rem; color: white; cursor: pointer; padding: .7rem 1rem; }
+      pre { background: #f2f4f8; min-height: 4rem; overflow-wrap: anywhere; padding: 1rem; white-space: pre-wrap; }
+      .hint { color: #526078; }
+    </style>
+  </head>
+  <body>
+    <h1>☁️ Cloud Copilot Demo</h1>
+    <p class="hint">Microsoft Foundry의 Claude Sonnet 5.5에 질문하세요. API 키는 브라우저로 전송되지 않습니다.</p>
+    <form id="chat-form">
+      <label for="message">질문</label>
+      <textarea id="message" maxlength="2000" required placeholder="GitHub Actions와 AKS의 역할을 설명해줘"></textarea>
+      <button type="submit">질문하기</button>
+    </form>
+    <h2>응답</h2>
+    <pre id="answer" aria-live="polite"></pre>
+    <script>
+      const form = document.querySelector("#chat-form");
+      const output = document.querySelector("#answer");
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        output.textContent = "생성 중…";
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: document.querySelector("#message").value })
+          });
+          const data = await response.json();
+          output.textContent = response.ok ? data.answer : data.error;
+        } catch {
+          output.textContent = "요청에 실패했습니다. 잠시 후 다시 시도하세요.";
+        }
+      });
+    </script>
+  </body>
+</html>

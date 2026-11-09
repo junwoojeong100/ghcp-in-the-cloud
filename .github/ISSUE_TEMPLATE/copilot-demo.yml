@@ -1,0 +1,19 @@
+name: Copilot demo task
+description: Create a small, testable change for the live Copilot demonstration
+title: "[Demo] "
+body:
+  - type: textarea
+    id: change
+    attributes:
+      label: Change
+      description: Describe a small improvement Copilot can implement.
+      placeholder: Add a character limit hint and a test for invalid chat input.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable behavior and tests.
+    validations:
+      required: true
