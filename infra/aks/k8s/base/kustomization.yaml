@@ -16,10 +16,11 @@ resources:
   - load-generator.yaml
 
 # The generated name carries a content hash, so changing a value rolls the pods.
+# The app version is not set here: it is baked into the image (--build-arg APP_VERSION),
+# so `kubectl set image` or a new IMAGE_TAG is all a rollout needs.
 configMapGenerator:
   - name: cloud-copilot-demo-config
     literals:
       - LLM_BACKEND=mock
       - FOUNDRY_MODEL=claude-sonnet-5-5
       - FOUNDRY_EFFORT=max
-      - APP_VERSION=v1

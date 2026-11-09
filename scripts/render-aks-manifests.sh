@@ -17,7 +17,7 @@ infra/aks/k8s/base 에 환경 값을 입히고 완성된 YAML 을 표준 출력�
 
 필수 환경 변수
   IMAGE_REPOSITORY    예: ccdacrab12cd.azurecr.io/cloud-copilot-demo
-  IMAGE_TAG           예: v1 (APP_VERSION 으로도 쓰입니다)
+  IMAGE_TAG           예: v1 (이미지에 구워진 APP_VERSION 과 같은 값으로 빌드해 두세요)
   WORKLOAD_CLIENT_ID  Workload Identity 용 관리 ID 의 클라이언트 ID (GUID)
 
 선택 환경 변수 (FOUNDRY_RESOURCE 를 지정하면 mock 대신 Foundry 의 Claude 를 호출합니다)
@@ -95,13 +95,9 @@ patches:
       - op: add
         path: /metadata/annotations/azure.workload.identity~1client-id
         value: "$WORKLOAD_CLIENT_ID"
-configMapGenerator:
-  - name: cloud-copilot-demo-config
-    behavior: merge
-    literals:
-      - APP_VERSION=$IMAGE_TAG
 EOF
   if [[ -n "$FOUNDRY_RESOURCE" ]]; then
+    printf 'configMapGenerator:\n  - name: cloud-copilot-demo-config\n    behavior: merge\n    literals:\n'
     printf '      - LLM_BACKEND=foundry\n      - FOUNDRY_RESOURCE=%s\n' "$FOUNDRY_RESOURCE"
     [[ -z "$FOUNDRY_MODEL" ]] || printf '      - FOUNDRY_MODEL=%s\n' "$FOUNDRY_MODEL"
     [[ -z "$FOUNDRY_EFFORT" ]] || printf '      - FOUNDRY_EFFORT=%s\n' "$FOUNDRY_EFFORT"
