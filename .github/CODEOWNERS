@@ -1,0 +1,29 @@
+# CODEOWNERS - 경로별 리뷰 책임자를 코드로 정의합니다.
+#
+# - main-protection 룰셋의 "코드 오너 리뷰 필수" 규칙과 함께 동작합니다.
+#   PR이 아래 경로의 파일을 바꾸면 해당 오너가 자동으로 리뷰어로 지정됩니다.
+# - 마지막으로 일치하는 패턴이 우선합니다. 그래서 가장 넓은 `*`를 맨 위에 둡니다.
+# - 이 데모는 1인 저장소라 모든 경로의 오너가 같습니다.
+#   실제 팀에서는 개인 대신 팀(@org/team)을 지정하세요. 팀은 저장소에 쓰기 권한이 있어야 합니다.
+#
+#   예) /infra/   @my-org/platform-team
+#       /app/     @my-org/app-team
+#       /.github/ @my-org/platform-team @my-org/security-team
+
+# 기본 오너: 아래에서 따로 지정하지 않은 모든 파일
+*            @junwoojeong100
+
+# 애플리케이션 코드와 테스트
+/app/        @junwoojeong100
+
+# 인프라 정의 (Bicep, Kubernetes 매니페스트)
+/infra/      @junwoojeong100
+
+# 워크플로, 룰셋, Dependabot 같은 저장소 거버넌스 설정
+/.github/    @junwoojeong100
+
+# 발표 자료
+/slides/     @junwoojeong100
+
+# 데모 가이드와 시연용 키트
+/demos/      @junwoojeong100

@@ -1,0 +1,9 @@
+# 빈 이슈 대신 템플릿(Copilot demo task 등)을 쓰도록 하고, 먼저 볼 문서를 안내합니다.
+blank_issues_enabled: false
+contact_links:
+  - name: 데모 가이드 (demos/)
+    url: https://github.com/junwoojeong100/ghcp-in-the-cloud/tree/main/demos
+    about: 질문하기 전에 데모별 시연 순서와 문제 해결 항목을 먼저 확인해 보세요.
+  - name: 프로젝트 README
+    url: https://github.com/junwoojeong100/ghcp-in-the-cloud/blob/main/README.md
+    about: 저장소 구성과 빠른 시작 방법을 확인할 수 있습니다.

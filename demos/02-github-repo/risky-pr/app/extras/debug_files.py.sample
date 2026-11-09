@@ -1,0 +1,36 @@
+"""DEMO ONLY: intentionally vulnerable sample. Never merge or deploy this file.
+
+It lives next to make-risky-pr.sh with a .sample suffix so scanners ignore it on main.
+The script copies it to app/extras/debug_files.py on a throwaway branch, which gives
+CodeQL something to find in the demo pull request.
+
+Expected CodeQL findings: py/path-injection, py/command-line-injection, py/flask-debug.
+"""
+
+import os
+import subprocess
+
+from flask import Flask, request
+
+app = Flask(__name__)
+LOG_DIR = "/var/log/cloud-copilot-demo"
+
+
+@app.route("/debug/file")
+def read_debug_file():
+    name = request.args.get("name", "app.log")
+    path = os.path.join(LOG_DIR, name)  # DEMO: "../" in name escapes LOG_DIR (py/path-injection)
+    with open(path, encoding="utf-8") as handle:
+        return handle.read()
+
+
+@app.route("/debug/ping")
+def ping_host():
+    host = request.args.get("host", "localhost")
+    # DEMO: request data goes straight into a shell command (py/command-line-injection)
+    result = subprocess.run(f"ping -c 1 {host}", shell=True, capture_output=True, text=True)
+    return result.stdout
+
+
+if __name__ == "__main__":
+    app.run(debug=True)  # DEMO: exposes the Werkzeug debugger (py/flask-debug)

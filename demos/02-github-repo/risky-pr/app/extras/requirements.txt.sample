@@ -1,0 +1,4 @@
+# DEMO ONLY: intentionally outdated pin that Dependency review should flag.
+# flask 2.2.4 is affected by GHSA-m2qf-hxjv-5gpq (CVE-2023-30861, severity high);
+# the fix shipped in 2.2.5 and 2.3.2. Never use this pin in a real project.
+flask==2.2.4
