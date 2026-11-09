@@ -4,42 +4,181 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cloud Copilot Demo</title>
-    <style>
-      body { font: 16px system-ui, sans-serif; margin: 3rem auto; max-width: 760px; padding: 0 1rem; color: #172033; }
-      textarea { box-sizing: border-box; display: block; min-height: 7rem; width: 100%; margin: 1rem 0; padding: .8rem; }
-      button { background: #2457d6; border: 0; border-radius: .3rem; color: white; cursor: pointer; padding: .7rem 1rem; }
-      pre { background: #f2f4f8; min-height: 4rem; overflow-wrap: anywhere; padding: 1rem; white-space: pre-wrap; }
-      .hint { color: #526078; }
+    <style nonce="__CSP_NONCE__">
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f8fb; --panel: #ffffff; --text: #172033; --muted: #526078;
+        --line: #d7deea; --accent: #2457d6; --accent-text: #ffffff; --code: #eef2f8;
+        --ok: #0b7a4b; --error: #b42318;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f1623; --panel: #172033; --text: #e8edf6; --muted: #9fb0c8;
+          --line: #2b3a54; --accent: #6b9bff; --accent-text: #0f1623; --code: #0f1623;
+          --ok: #4cc38a; --error: #ff8a80;
+        }
+      }
+      * { box-sizing: border-box; }
+      body { background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, "Malgun Gothic", sans-serif; margin: 0; }
+      main { margin: 0 auto; max-width: 860px; padding: 2rem 1rem 4rem; }
+      h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+      h2 { font-size: 1.05rem; margin: 0 0 .75rem; }
+      .hint { color: var(--muted); margin: 0 0 1.5rem; }
+      section { background: var(--panel); border: 1px solid var(--line); border-radius: .6rem; margin-bottom: 1.25rem; padding: 1rem 1.25rem; }
+      .chips { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 0 0 .9rem; }
+      .chip { background: var(--code); border-radius: .4rem; min-width: 0; padding: .45rem .65rem; }
+      .chip .label { color: var(--muted); display: block; font-size: .75rem; }
+      .chip strong { display: block; overflow-wrap: anywhere; }
+      .row { align-items: center; display: flex; flex-wrap: wrap; gap: .5rem; }
+      button { background: var(--accent); border: 0; border-radius: .4rem; color: var(--accent-text); cursor: pointer; font: inherit; padding: .55rem 1rem; }
+      button.secondary { background: transparent; border: 1px solid var(--line); color: var(--text); }
+      button.example { background: var(--code); border: 0; border-radius: 2rem; color: var(--text); font-size: .85rem; padding: .3rem .8rem; }
+      button:disabled { cursor: wait; opacity: .6; }
+      button:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+      textarea { background: var(--bg); border: 1px solid var(--line); border-radius: .4rem; color: inherit; display: block; font: inherit; margin: .75rem 0; min-height: 6.5rem; padding: .7rem; width: 100%; }
+      pre { background: var(--code); border-radius: .4rem; margin: .75rem 0 0; min-height: 3rem; overflow-wrap: anywhere; padding: .8rem; white-space: pre-wrap; }
+      #answer { font: inherit; }
+      .meta { color: var(--muted); font-size: .85rem; margin: .5rem 0 0; }
+      .error { color: var(--error); }
     </style>
   </head>
   <body>
-    <h1>☁️ Cloud Copilot Demo</h1>
-    <p class="hint">Microsoft Foundry의 Claude Sonnet 5.5에 질문하세요. API 키는 브라우저로 전송되지 않습니다.</p>
-    <form id="chat-form">
-      <label for="message">질문</label>
-      <textarea id="message" maxlength="2000" required placeholder="GitHub Actions와 AKS의 역할을 설명해줘"></textarea>
-      <button type="submit">질문하기</button>
-    </form>
-    <h2>응답</h2>
-    <pre id="answer" aria-live="polite"></pre>
-    <script>
-      const form = document.querySelector("#chat-form");
-      const output = document.querySelector("#answer");
-      form.addEventListener("submit", async (event) => {
+    <main>
+      <h1>☁️ Cloud Copilot Demo</h1>
+      <p class="hint">GitHub · Microsoft Foundry · AKS · ACA 데모용 앱입니다. 같은 컨테이너 이미지가 로컬, ACA, AKS에서 그대로 실행됩니다. API 키는 브라우저로 전송되지 않습니다.</p>
+
+      <section aria-labelledby="runtime-title">
+        <h2 id="runtime-title">실행 환경</h2>
+        <div class="chips">
+          <div class="chip"><span class="label">플랫폼</span><strong id="info-platform">-</strong></div>
+          <div class="chip"><span class="label">인스턴스</span><strong id="info-instance">-</strong></div>
+          <div class="chip"><span class="label">리비전</span><strong id="info-revision">-</strong></div>
+          <div class="chip"><span class="label">앱 버전</span><strong id="info-version">-</strong></div>
+          <div class="chip"><span class="label">모델 (배포 이름)</span><strong id="info-model">-</strong></div>
+          <div class="chip"><span class="label">effort</span><strong id="info-effort">-</strong></div>
+          <div class="chip"><span class="label">인증</span><strong id="info-auth">-</strong></div>
+          <div class="chip"><span class="label">백엔드</span><strong id="info-backend">-</strong></div>
+        </div>
+        <div class="row">
+          <button type="button" class="secondary" id="refresh-info">새로고침</button>
+          <button type="button" class="secondary" id="show-distribution">트래픽 분포 보기 (20회 호출)</button>
+        </div>
+        <pre id="distribution" aria-live="polite" hidden></pre>
+      </section>
+
+      <section aria-labelledby="chat-title">
+        <h2 id="chat-title">질문하기</h2>
+        <div class="row" role="group" aria-label="예시 질문">
+          <button type="button" class="example">GitHub Actions에서 OIDC로 Azure에 로그인하면 뭐가 좋아?</button>
+          <button type="button" class="example">AKS와 ACA는 언제 각각 쓰면 좋아?</button>
+          <button type="button" class="example">Foundry에서 Claude를 쓰면 얻는 이점은?</button>
+        </div>
+        <form id="chat-form">
+          <label for="message" class="meta">질문 (최대 2000자)</label>
+          <textarea id="message" maxlength="2000" required placeholder="GitHub Actions와 AKS의 역할을 설명해줘"></textarea>
+          <button type="submit" id="submit">질문하기</button>
+        </form>
+        <pre id="answer" aria-live="polite"></pre>
+        <p class="meta" id="served-by"></p>
+      </section>
+    </main>
+    <script nonce="__CSP_NONCE__">
+      const $ = (selector) => document.querySelector(selector);
+
+      async function fetchInfo() {
+        const response = await fetch("/api/info", { cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      }
+
+      function renderInfo(info) {
+        for (const key of ["platform", "instance", "revision", "version", "model", "effort", "auth", "backend"]) {
+          $("#info-" + key).textContent = info[key] || "-";
+        }
+      }
+
+      async function refreshInfo() {
+        try {
+          renderInfo(await fetchInfo());
+        } catch {
+          $("#info-platform").textContent = "정보를 불러오지 못했습니다";
+        }
+      }
+
+      function tally(items, key) {
+        const counts = new Map();
+        for (const item of items) {
+          const name = item[key] || "(없음)";
+          counts.set(name, (counts.get(name) || 0) + 1);
+        }
+        return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+      }
+
+      function formatTally(title, entries, total) {
+        const lines = entries.map(([name, count]) => "  " + "█".repeat(count) + " " + count + "/" + total + "  " + name);
+        return [title, ...lines].join("\n");
+      }
+
+      async function showDistribution() {
+        const output = $("#distribution");
+        const total = 20;
+        output.hidden = false;
+        output.textContent = "호출 중…";
+        const results = await Promise.all(Array.from({ length: total }, () => fetchInfo().catch(() => null)));
+        const items = results.filter(Boolean);
+        if (items.length === 0) {
+          output.textContent = "응답을 받지 못했습니다.";
+          return;
+        }
+        output.textContent = [
+          formatTally("리비전별", tally(items, "revision"), items.length),
+          formatTally("인스턴스별", tally(items, "instance"), items.length),
+          formatTally("앱 버전별", tally(items, "version"), items.length),
+        ].join("\n\n");
+      }
+
+      async function ask(event) {
         event.preventDefault();
-        output.textContent = "생성 중…";
+        const answer = $("#answer");
+        const submit = $("#submit");
+        const servedBy = $("#served-by");
+        answer.classList.remove("error");
+        answer.textContent = "생성 중…";
+        servedBy.textContent = "";
+        submit.disabled = true;
         try {
           const response = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: document.querySelector("#message").value })
+            body: JSON.stringify({ message: $("#message").value }),
           });
           const data = await response.json();
-          output.textContent = response.ok ? data.answer : data.error;
+          if (response.ok) {
+            answer.textContent = data.answer;
+            const who = data.served_by || {};
+            servedBy.textContent = "응답한 인스턴스: " + (who.instance || "-") + " · 리비전: " + (who.revision || "-") + " · 앱 버전: " + (who.version || "-");
+          } else {
+            answer.classList.add("error");
+            answer.textContent = data.error + (data.hint ? "\n" + data.hint : "");
+          }
         } catch {
-          output.textContent = "요청에 실패했습니다. 잠시 후 다시 시도하세요.";
+          answer.classList.add("error");
+          answer.textContent = "요청에 실패했습니다. 잠시 후 다시 시도하세요.";
+        } finally {
+          submit.disabled = false;
         }
-      });
+      }
+
+      $("#chat-form").addEventListener("submit", ask);
+      $("#refresh-info").addEventListener("click", refreshInfo);
+      $("#show-distribution").addEventListener("click", showDistribution);
+      for (const button of document.querySelectorAll("button.example")) {
+        button.addEventListener("click", () => {
+          $("#message").value = button.textContent;
+          $("#message").focus();
+        });
+      }
+      refreshInfo();
     </script>
   </body>
 </html>

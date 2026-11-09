@@ -1,4 +1,7 @@
-.git
-.github
+# Allow-list: the image only needs the application code.
+*
+!app/
+app/tests/
+app/Dockerfile
 **/__pycache__
 **/*.pyc
