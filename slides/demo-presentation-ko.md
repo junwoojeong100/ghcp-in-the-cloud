@@ -7,13 +7,13 @@
 | 구간 | 슬라이드 | Full | Lite |
 |---|---|---|---|
 | 오프닝 | 1–5 | 약 4.5분 | 약 4.5분 |
-| 데모 1 · GitHub Copilot | 6–8 | 7분 | 4분 |
-| 데모 2 · GitHub Repo | 9–11 | 6분 | 건너뜀 |
-| 데모 3 · GitHub Actions | 12–14 | 7분 | 4분 |
-| 데모 4 · Microsoft Foundry | 15–17 | 7분 | 3분 |
-| 데모 5 · Azure Container Apps | 18–20 | 7분 | 4분 |
-| 데모 6 · AKS | 21–23 | 8분 | 건너뜀 |
-| 마무리 | 24–28 | 약 5.5분 + Q&A | 약 5.5분 + Q&A |
+| 데모 1 · GitHub Copilot | 6–9 | 7분 | 4분 |
+| 데모 2 · GitHub Repo | 10–13 | 6분 | 건너뜀 |
+| 데모 3 · GitHub Actions | 14–17 | 7분 | 4분 |
+| 데모 4 · Microsoft Foundry | 18–21 | 7분 | 3분 |
+| 데모 5 · Azure Container Apps | 22–25 | 7분 | 4분 |
+| 데모 6 · AKS | 26–29 | 8분 | 건너뜀 |
+| 마무리 | 30–34 | 약 5.5분 + Q&A | 약 5.5분 + Q&A |
 | **데모 합계** |  | **약 42분** | **약 15분** |
 | 발표 전체(참고) |  | 약 52분 + Q&A | 약 25분 + Q&A |
 
@@ -32,30 +32,36 @@
 | 5 | 샘플 앱: 이미지 하나가 어디서나 동작합니다 | 다이어그램 | 약 1분 |
 | 6 | 이슈에서 PR까지, AI 팀원과 협업 | 가치 | 약 1분 |
 | 7 | 시연 흐름: GitHub Copilot | 시연 흐름 | 약 6.5분 |
-| 8 | 핵심 설정: 팀 규칙을 저장소에 둡니다 | 핵심 코드 | 약 1분 |
-| 9 | 안전한 협업의 기본값: Rulesets·보안·Codespaces | 가치 | 약 1분 |
-| 10 | 시연 흐름: GitHub Repo | 시연 흐름 | 약 6분 |
-| 11 | 핵심 설정: 룰셋과 CODEOWNERS | 핵심 코드 | 약 1분 |
-| 12 | 비밀 없는 CI/CD(OIDC)와 재사용 가능한 파이프라인 | 가치 | 약 1분 |
-| 13 | 시연 흐름: GitHub Actions | 시연 흐름 | 약 7분 |
-| 14 | 핵심 코드: 저장된 비밀 0개 | 핵심 코드 | 약 1분 |
-| 15 | 모델 선택권과 키 없는 보안 연결 | 가치 | 약 1분 |
-| 16 | 시연 흐름: Microsoft Foundry | 시연 흐름 | 약 5.5분 |
-| 17 | 핵심 코드: AnthropicFoundry + Entra ID | 핵심 코드 | 약 1분 |
-| 18 | 서버리스 컨테이너, 스케일 투 제로, 리비전 카나리 | 가치 | 약 1분 |
-| 19 | 시연 흐름: Azure Container Apps | 시연 흐름 | 약 7분 |
-| 20 | 핵심 명령: 카나리와 스케일 규칙 | 핵심 코드 | 약 1분 |
-| 21 | 롤링 업데이트, 자동 확장, 워크로드 ID, 보안 기본값 | 가치 | 약 1분 |
-| 22 | 시연 흐름: AKS | 시연 흐름 | 약 7.5분 |
-| 23 | 핵심 설정: 워크로드 ID와 HPA | 핵심 코드 | 약 1분 |
-| 24 | 선택 가이드: Container Apps vs AKS | 비교표 | 약 1.5분 |
-| 25 | End-to-end: 아이디어에서 Foundry까지 | 다이어그램 | 약 1분 |
-| 26 | 보안·비용·거버넌스 체크리스트 | 체크리스트 | 약 1분 |
-| 27 | 서비스별 핵심 이점 한 장 요약 | 요약 | 약 1분 |
-| 28 | 시작하기 · Q&A | 마무리 | 약 1분 |
-| 29 | 부록 A. 사전 준비 체크리스트 | 부록 | – |
-| 30 | 부록 B. 트러블슈팅 Top 5 | 부록 | – |
-| 31 | 부록 C. 참고 링크 | 부록 | – |
+| 8 | 데모 영상: GitHub Copilot | 데모 영상 | – |
+| 9 | 핵심 설정: 팀 규칙을 저장소에 둡니다 | 핵심 코드 | 약 1분 |
+| 10 | 안전한 협업의 기본값: Rulesets·보안·Codespaces | 가치 | 약 1분 |
+| 11 | 시연 흐름: GitHub Repo | 시연 흐름 | 약 6분 |
+| 12 | 데모 영상: GitHub Repo | 데모 영상 | – |
+| 13 | 핵심 설정: 룰셋과 CODEOWNERS | 핵심 코드 | 약 1분 |
+| 14 | 비밀 없는 CI/CD(OIDC)와 재사용 가능한 파이프라인 | 가치 | 약 1분 |
+| 15 | 시연 흐름: GitHub Actions | 시연 흐름 | 약 7분 |
+| 16 | 데모 영상: GitHub Actions | 데모 영상 | – |
+| 17 | 핵심 코드: 저장된 비밀 0개 | 핵심 코드 | 약 1분 |
+| 18 | 모델 선택권과 키 없는 보안 연결 | 가치 | 약 1분 |
+| 19 | 시연 흐름: Microsoft Foundry | 시연 흐름 | 약 5.5분 |
+| 20 | 데모 영상: Microsoft Foundry | 데모 영상 | – |
+| 21 | 핵심 코드: AnthropicFoundry + Entra ID | 핵심 코드 | 약 1분 |
+| 22 | 서버리스 컨테이너, 스케일 투 제로, 리비전 카나리 | 가치 | 약 1분 |
+| 23 | 시연 흐름: Azure Container Apps | 시연 흐름 | 약 7분 |
+| 24 | 데모 영상: Azure Container Apps | 데모 영상 | – |
+| 25 | 핵심 명령: 카나리와 스케일 규칙 | 핵심 코드 | 약 1분 |
+| 26 | 롤링 업데이트, 자동 확장, 워크로드 ID, 보안 기본값 | 가치 | 약 1분 |
+| 27 | 시연 흐름: AKS | 시연 흐름 | 약 7.5분 |
+| 28 | 데모 영상: AKS | 데모 영상 | – |
+| 29 | 핵심 설정: 워크로드 ID와 HPA | 핵심 코드 | 약 1분 |
+| 30 | 선택 가이드: Container Apps vs AKS | 비교표 | 약 1.5분 |
+| 31 | End-to-end: 아이디어에서 Foundry까지 | 다이어그램 | 약 1분 |
+| 32 | 보안·비용·거버넌스 체크리스트 | 체크리스트 | 약 1분 |
+| 33 | 서비스별 핵심 이점 한 장 요약 | 요약 | 약 1분 |
+| 34 | 시작하기 · Q&A | 마무리 | 약 1분 |
+| 35 | 부록 A. 사전 준비 체크리스트 | 부록 | – |
+| 36 | 부록 B. 트러블슈팅 Top 5 | 부록 | – |
+| 37 | 부록 C. 참고 링크 | 부록 | – |
 
 ---
 
@@ -263,7 +269,29 @@
 
 ---
 
-## 8. 핵심 설정: 팀 규칙을 저장소에 둡니다
+## 8. 데모 영상: GitHub Copilot
+
+*데모 영상 · 데모 1 / 6 · GitHub Copilot · 녹화 영상*
+
+### 화면 구성
+
+- 영상 파일: `slides/videos/copilot.mp4`
+- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.
+- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`
+
+### 말할 내용
+
+- 이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.
+
+### 시연 큐
+
+- slides/videos/copilot.mp4 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다.
+
+[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음
+
+---
+
+## 9. 핵심 설정: 팀 규칙을 저장소에 둡니다
 
 *핵심 코드 · 데모 1 / 6 · GitHub Copilot · 핵심 코드*
 
@@ -304,7 +332,7 @@
 
 ---
 
-## 9. 안전한 협업의 기본값: Rulesets·보안·Codespaces
+## 10. 안전한 협업의 기본값: Rulesets·보안·Codespaces
 
 *가치 · 데모 2 / 6 · GitHub Repo · 가치*
 
@@ -334,7 +362,7 @@
 
 ---
 
-## 10. 시연 흐름: GitHub Repo
+## 11. 시연 흐름: GitHub Repo
 
 *시연 흐름 · 데모 2 / 6 · GitHub Repo · 시연 흐름*
 
@@ -366,7 +394,29 @@
 
 ---
 
-## 11. 핵심 설정: 룰셋과 CODEOWNERS
+## 12. 데모 영상: GitHub Repo
+
+*데모 영상 · 데모 2 / 6 · GitHub Repo · 녹화 영상*
+
+### 화면 구성
+
+- 영상 파일: `slides/videos/repo.mp4`
+- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.
+- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`
+
+### 말할 내용
+
+- 이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.
+
+### 시연 큐
+
+- slides/videos/repo.mp4 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다.
+
+[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음
+
+---
+
+## 13. 핵심 설정: 룰셋과 CODEOWNERS
 
 *핵심 코드 · 데모 2 / 6 · GitHub Repo · 핵심 코드*
 
@@ -405,7 +455,7 @@
 
 ---
 
-## 12. 비밀 없는 CI/CD(OIDC)와 재사용 가능한 파이프라인
+## 14. 비밀 없는 CI/CD(OIDC)와 재사용 가능한 파이프라인
 
 *가치 · 데모 3 / 6 · GitHub Actions · 가치*
 
@@ -434,7 +484,7 @@
 
 ---
 
-## 13. 시연 흐름: GitHub Actions
+## 15. 시연 흐름: GitHub Actions
 
 *시연 흐름 · 데모 3 / 6 · GitHub Actions · 시연 흐름*
 
@@ -464,7 +514,29 @@
 
 ---
 
-## 14. 핵심 코드: 저장된 비밀 0개
+## 16. 데모 영상: GitHub Actions
+
+*데모 영상 · 데모 3 / 6 · GitHub Actions · 녹화 영상*
+
+### 화면 구성
+
+- 영상 파일: `slides/videos/actions.mp4`
+- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.
+- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`
+
+### 말할 내용
+
+- 이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.
+
+### 시연 큐
+
+- slides/videos/actions.mp4 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다.
+
+[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음
+
+---
+
+## 17. 핵심 코드: 저장된 비밀 0개
 
 *핵심 코드 · 데모 3 / 6 · GitHub Actions · 핵심 코드*
 
@@ -504,7 +576,7 @@ steps:
 
 ---
 
-## 15. 모델 선택권과 키 없는 보안 연결
+## 18. 모델 선택권과 키 없는 보안 연결
 
 *가치 · 데모 4 / 6 · Microsoft Foundry · 가치*
 
@@ -534,7 +606,7 @@ steps:
 
 ---
 
-## 16. 시연 흐름: Microsoft Foundry
+## 19. 시연 흐름: Microsoft Foundry
 
 *시연 흐름 · 데모 4 / 6 · Microsoft Foundry · 시연 흐름*
 
@@ -567,7 +639,29 @@ steps:
 
 ---
 
-## 17. 핵심 코드: AnthropicFoundry + Entra ID
+## 20. 데모 영상: Microsoft Foundry
+
+*데모 영상 · 데모 4 / 6 · Microsoft Foundry · 녹화 영상*
+
+### 화면 구성
+
+- 영상 파일: `slides/videos/foundry.mp4`
+- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.
+- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`
+
+### 말할 내용
+
+- 이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.
+
+### 시연 큐
+
+- slides/videos/foundry.mp4 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다.
+
+[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음
+
+---
+
+## 21. 핵심 코드: AnthropicFoundry + Entra ID
 
 *핵심 코드 · 데모 4 / 6 · Microsoft Foundry · 핵심 코드*
 
@@ -609,7 +703,7 @@ resp = client.messages.create(
 
 ---
 
-## 18. 서버리스 컨테이너, 스케일 투 제로, 리비전 카나리
+## 22. 서버리스 컨테이너, 스케일 투 제로, 리비전 카나리
 
 *가치 · 데모 5 / 6 · Azure Container Apps · 가치*
 
@@ -638,7 +732,7 @@ resp = client.messages.create(
 
 ---
 
-## 19. 시연 흐름: Azure Container Apps
+## 23. 시연 흐름: Azure Container Apps
 
 *시연 흐름 · 데모 5 / 6 · Azure Container Apps · 시연 흐름*
 
@@ -670,7 +764,29 @@ resp = client.messages.create(
 
 ---
 
-## 20. 핵심 명령: 카나리와 스케일 규칙
+## 24. 데모 영상: Azure Container Apps
+
+*데모 영상 · 데모 5 / 6 · Azure Container Apps · 녹화 영상*
+
+### 화면 구성
+
+- 영상 파일: `slides/videos/aca.mp4`
+- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.
+- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`
+
+### 말할 내용
+
+- 이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.
+
+### 시연 큐
+
+- slides/videos/aca.mp4 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다.
+
+[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음
+
+---
+
+## 25. 핵심 명령: 카나리와 스케일 규칙
 
 *핵심 코드 · 데모 5 / 6 · Azure Container Apps · 핵심 코드*
 
@@ -709,7 +825,7 @@ az containerapp ingress traffic set -g $RG -n $APP \
 
 ---
 
-## 21. 롤링 업데이트, 자동 확장, 워크로드 ID, 보안 기본값
+## 26. 롤링 업데이트, 자동 확장, 워크로드 ID, 보안 기본값
 
 *가치 · 데모 6 / 6 · AKS · 가치*
 
@@ -739,7 +855,7 @@ az containerapp ingress traffic set -g $RG -n $APP \
 
 ---
 
-## 22. 시연 흐름: AKS
+## 27. 시연 흐름: AKS
 
 *시연 흐름 · 데모 6 / 6 · AKS · 시연 흐름*
 
@@ -773,7 +889,29 @@ az containerapp ingress traffic set -g $RG -n $APP \
 
 ---
 
-## 23. 핵심 설정: 워크로드 ID와 HPA
+## 28. 데모 영상: AKS
+
+*데모 영상 · 데모 6 / 6 · AKS · 녹화 영상*
+
+### 화면 구성
+
+- 영상 파일: `slides/videos/aks.mp4`
+- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.
+- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`
+
+### 말할 내용
+
+- 이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.
+
+### 시연 큐
+
+- slides/videos/aks.mp4 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다.
+
+[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음
+
+---
+
+## 29. 핵심 설정: 워크로드 ID와 HPA
 
 *핵심 코드 · 데모 6 / 6 · AKS · 핵심 코드*
 
@@ -818,7 +956,7 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 
 ---
 
-## 24. 선택 가이드: Container Apps vs AKS
+## 30. 선택 가이드: Container Apps vs AKS
 
 *비교표 · 정리 · 선택 가이드*
 
@@ -850,7 +988,7 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 
 ---
 
-## 25. End-to-end: 아이디어에서 Foundry까지
+## 31. End-to-end: 아이디어에서 Foundry까지
 
 *다이어그램 · 정리 · End-to-end*
 
@@ -877,7 +1015,7 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 
 ---
 
-## 26. 보안·비용·거버넌스 체크리스트
+## 32. 보안·비용·거버넌스 체크리스트
 
 *체크리스트 · 정리 · 거버넌스*
 
@@ -904,7 +1042,7 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 
 ---
 
-## 27. 서비스별 핵심 이점 한 장 요약
+## 33. 서비스별 핵심 이점 한 장 요약
 
 *요약 · 정리 · 핵심 이점*
 
@@ -932,7 +1070,7 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 
 ---
 
-## 28. 시작하기 · Q&A
+## 34. 시작하기 · Q&A
 
 *마무리*
 
@@ -967,7 +1105,7 @@ LLM_BACKEND=mock python -m app.server
 
 ---
 
-## 29. 부록 A. 사전 준비 체크리스트
+## 35. 부록 A. 사전 준비 체크리스트
 
 *부록 · 부록*
 
@@ -1003,7 +1141,7 @@ LLM_BACKEND=mock python -m app.server
 
 ---
 
-## 30. 부록 B. 트러블슈팅 Top 5
+## 36. 부록 B. 트러블슈팅 Top 5
 
 *부록 · 부록*
 
@@ -1031,7 +1169,7 @@ LLM_BACKEND=mock python -m app.server
 
 ---
 
-## 31. 부록 C. 참고 링크
+## 37. 부록 C. 참고 링크
 
 *부록 · 부록*
 
