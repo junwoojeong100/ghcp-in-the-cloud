@@ -33,6 +33,7 @@ from pptx.util import Emu, Inches, Pt
 HERE = Path(__file__).resolve().parent
 PPTX_PATH = HERE / "demo-presentation-ko.pptx"
 MD_PATH = HERE / "demo-presentation-ko.md"
+VIDEO_DIR = HERE / "videos"
 
 
 def OxmlElement(tag: str, attrs: dict | None = None):
@@ -1298,6 +1299,16 @@ def build_slides() -> list[dict]:
         tag = f"데모 {d['no']} / 6 · {d['product']}"
         add("value", d["title"], tag + " · 가치", d["key"], d["notes"]["value"], demo=d)
         add("flow", f"시연 흐름: {d['product']}", tag + " · 시연 흐름", d["key"], d["notes"]["flow"], demo=d)
+        video_path = VIDEO_DIR / f"{d['key']}.mp4"
+        add("video", f"데모 영상: {d['product']}", tag + " · 녹화 영상", d["key"],
+            {
+                "say": [("실제 데모 실행 화면을 녹화한 영상입니다. 영상은 해당 데모 README의 시연 순서를 따릅니다."
+                         if video_path.is_file() else
+                         "이 데모의 실제 녹화 영상은 아직 없습니다. 녹화 안내의 시연 순서와 성공 기준을 따라 촬영한 뒤 삽입합니다.")],
+                "cue": [f"slides/videos/{video_path.name} 파일이 없으면 녹화 안내를 따라 촬영한 뒤 다시 빌드합니다."],
+                "time": "[예상 시간] 선택 재생 · 데모 진행 시간에 포함하지 않음",
+            },
+            demo=d, video_path=video_path)
         add("code", d["code"]["title"], tag + " · 핵심 코드", d["key"], d["notes"]["code"], demo=d)
     add("compare", f["compare"]["title"], "정리 · 선택 가이드", "aks", f["compare"]["notes"], **f["compare"])
     add("pipeline", f["pipeline"]["title"], "정리 · End-to-end", "neutral", f["pipeline"]["notes"], **f["pipeline"])
@@ -1678,6 +1689,27 @@ def render_flow(slide, s, th):
         deco(slide, x_ok, y + 0.12, 0.06, row_h - 0.24, P["ok"], f"Step {i + 1} success bar")
         add_text(slide, x_ok + 0.2, y + 0.04, w_ok - 0.2, row_h - 0.08, [{"t": ok}], size=18, color=P["ink"],
                  name=f"Step {i + 1} success criterion", anchor="m")
+
+
+def render_video(slide, s, th):
+    video_path = s["data"]["video_path"]
+    x, y, w, h = MX, BODY_TOP, CW, 4.75
+    add_box(slide, x, y, w, h, fill=P["code_bg"], name="Demo video frame",
+            alt=f"{s['data']['demo']['product']} 실제 시연 영상")
+    if video_path.is_file():
+        movie = slide.shapes.add_movie(
+            str(video_path), Inches(x), Inches(y), Inches(w), Inches(h), mime_type="video/mp4")
+        movie.name = f"Demo video {s['data']['demo']['key']}"
+    else:
+        add_text(slide, x + 0.4, y + 1.3, w - 0.8, 0.7,
+                 [{"t": "녹화 영상이 아직 없습니다", "align": "c"}], size=28, bold=True,
+                 color=P["dark_text"], name="Video not recorded", anchor="m")
+        add_text(slide, x + 0.4, y + 2.15, w - 0.8, 0.7,
+                 [{"t": f"녹화 후 여기에 저장: slides/videos/{video_path.name}", "align": "c"}],
+                 size=20, color=P["dark_muted"], name="Video file path", anchor="m")
+    add_text(slide, x, y + h + 0.18, w, 0.35,
+             [{"t": "실제 화면 녹화 · 발표자 노트와 slides/VIDEO_GUIDE_KO.md 참고"}],
+             size=16, color=P["muted"], name="Video playback note", spacing=1.0)
 
 
 def render_code(slide, s, th):
@@ -2117,7 +2149,7 @@ def render_links(slide, s, th):
 APPENDIX_KINDS = ("prep", "trouble", "links")
 KIND_LABEL = {
     "title": "표지", "agenda": "개요", "arch": "다이어그램", "matrix": "표", "app": "다이어그램",
-    "value": "가치", "flow": "시연 흐름", "code": "핵심 코드", "compare": "비교표", "pipeline": "다이어그램",
+    "value": "가치", "flow": "시연 흐름", "video": "데모 영상", "code": "핵심 코드", "compare": "비교표", "pipeline": "다이어그램",
     "governance": "체크리스트", "summary": "요약", "closing": "마무리", "prep": "부록", "trouble": "부록",
     "links": "부록",
 }
@@ -2204,6 +2236,10 @@ def outline_for(s: dict) -> list[str]:
             o += ["", f"- 옵션 · {ot} ({otime}): {otext}"]
         if x.get("flow_foot"):
             o += [f"- 참고: {x['flow_foot']}"]
+    elif k == "video":
+        o += [f"- 영상 파일: `slides/videos/{d['video_path'].name}`",
+              "- 파일이 있으면 PPTX에 삽입하고, 없으면 녹화 위치 안내를 표시합니다.",
+              "- 실제 화면 녹화 지침: `slides/VIDEO_GUIDE_KO.md`"]
     elif k == "code":
         c = d["demo"]["code"]
         for b in c["blocks"]:
@@ -2255,8 +2291,8 @@ def render_markdown(S: list[dict]) -> str:
     a("")
     rows = [["오프닝", f"1–{T['first'] - 1}", f"약 {fmt_min(T['opening'])}분", f"약 {fmt_min(T['opening'])}분"]]
     for i, d in enumerate(DEMOS):
-        base = T["first"] + 3 * i
-        rows.append([f"데모 {d['no']} · {d['product']}", f"{base}–{base + 2}", f"{d['minutes']}분",
+        base = T["first"] + 4 * i
+        rows.append([f"데모 {d['no']} · {d['product']}", f"{base}–{base + 3}", f"{d['minutes']}분",
                      f"{d['lite_min']}분" if d["lite_min"] else "건너뜀"])
     rows.append(["마무리", f"{T['last'] + 1}–{T['closing']}", f"약 {fmt_min(T['wrap'])}분 + Q&A",
                  f"약 {fmt_min(T['wrap'])}분 + Q&A"])
@@ -2306,7 +2342,7 @@ def render_markdown(S: list[dict]) -> str:
 # ---------------------------------------------------------------------------
 LIGHT_RENDERERS = {
     "agenda": render_agenda, "arch": render_arch, "matrix": render_matrix, "app": render_app,
-    "value": render_value, "flow": render_flow, "code": render_code, "compare": render_compare,
+    "value": render_value, "flow": render_flow, "video": render_video, "code": render_code, "compare": render_compare,
     "pipeline": render_pipeline, "governance": render_governance, "summary": render_summary,
     "prep": render_prep, "trouble": render_trouble, "links": render_links,
 }
