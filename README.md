@@ -4,7 +4,7 @@ GitHub Copilot, GitHub(저장소·Actions), Microsoft Foundry, Azure Container A
 
 > **먼저 읽어 주세요**
 >
-> - **검증 범위**: 코드와 스크립트는 로컬 실행(단위 테스트, 컨테이너 빌드와 스모크 테스트)과 정적 검사(Bicep 빌드, kubeconform, actionlint, shellcheck, hadolint)로 확인했습니다. 실제 Azure 구독에 배포하는 시연은 이 키트를 만드는 단계에서 실행하지 않았습니다. 첫 발표 전에 반드시 한 번 리허설하세요.
+> - **검증 범위**: 코드와 스크립트는 로컬 실행(단위 테스트, 컨테이너 빌드와 스모크 테스트)과 정적 검사(Bicep 빌드, kubeconform, actionlint, shellcheck, hadolint)로 확인했습니다. 실제 Azure 구독에 배포하는 시연은 연습용 저장소에서 여섯 데모를 끝까지 실행하고 녹화해 확인했습니다([발표 자료와 가이드](#발표-자료와-가이드)). 구독과 권한에 따라 결과가 다를 수 있으니 첫 발표 전에 반드시 한 번 리허설하세요.
 > - **자리 표시자**: 꺾쇠(`<>`) 안은 자신의 값으로 바꾸는 자리 표시자입니다. 예를 들어 `<owner/name>`은 `junwoojeong100/ghcp-in-the-cloud`처럼 바꿉니다.
 > - **화면 이름**: UI 메뉴 이름은 변경될 수 있음을 염두에 두세요. 화면이 다르면 문서에 적힌 CLI 명령이나 설정 이름을 기준으로 찾으세요.
 > - **실행 환경**: 스크립트는 bash 4 이상이 필요합니다. macOS의 기본 bash는 3.2라서 `brew install bash`로 설치하세요. Windows에서는 WSL2나 Codespaces에서 실행하세요.
@@ -214,6 +214,19 @@ docs/                 녹화 데모 슬라이드를 게시하는 GitHub Pages �
 - [DEMO_GUIDE_KO.md](DEMO_GUIDE_KO.md): 전체 코스(약 42분)와 요약 코스(약 15분), 시연 전 체크리스트, 시간표
 - [slides/](slides/): 발표 슬라이드(`demo-presentation-ko.pptx`, 모든 슬라이드에 발표자 노트 포함)와 슬라이드별 진행 대본(`demo-presentation-ko.md`). 데모마다 가치, 시연 흐름, 핵심 코드 세 장으로 구성했습니다. 두 파일은 `slides/build_deck.py`가 같은 데이터로 만들며, 고칠 때는 스크립트를 수정한 뒤 `pip install -r slides/requirements.txt`와 `python slides/build_deck.py`를 실행합니다. 데모 앱과는 별개인 도구이므로 데모를 실행하는 데는 필요 없습니다.
 - [demos/](demos/): 데모별 시연 문서
+- 녹화 데모 슬라이드(웹에서 보기): [국문](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_KO.pptx) 또는 [영문](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_EN.pptx). 데모 영상 32편이 들어 있는 슬라이드 45장이고 Office 웹 뷰어에서 바로 열립니다. 영상은 슬라이드의 ▶를 눌러 재생합니다. [국문 PPTX](https://junwoojeong100.github.io/ghcp-in-the-cloud/GHCP_in_the_Cloud_Demo_KO.pptx)와 [영문 PPTX](https://junwoojeong100.github.io/ghcp-in-the-cloud/GHCP_in_the_Cloud_Demo_EN.pptx)는 내려받을 수도 있습니다. 파일은 릴리스 [`recorded-demo-slides`](https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/tag/recorded-demo-slides)에 있고 `Pages` 워크플로가 GitHub Pages로 게시합니다. 덱을 바꾸면 릴리스 파일을 교체한 뒤 이 워크플로를 실행하세요.
+
+## 원본과 연습용 저장소
+
+이 저장소가 유일한 원본입니다. 코드, 인프라, 스크립트, 가이드는 여기서만 고치고, 시연은 이 저장소로 새로 만든 **연습용 저장소**에서 합니다. Demo 1~3이 저장소 설정을 바꾸고, PR을 열고, Copilot이 만든 변경을 merge하기 때문에 원본을 깨끗하게 두려는 것입니다.
+
+```bash
+gh repo create <owner>/<name> --template junwoojeong100/ghcp-in-the-cloud --public --clone
+```
+
+시연이 끝나면 연습용 저장소를 통째로 지웁니다(`gh repo delete <owner>/<name>`). 자세한 순서는 [DEMO_GUIDE_KO.md](DEMO_GUIDE_KO.md)의 체크리스트와 정리에 있습니다.
+
+녹화 영상과 슬라이드에 보이는 `ghcp-in-the-cloud-practice`(국문)와 `ghcp-in-the-cloud-practice-en`(영문)은 녹화에 쓴 연습용 저장소였고 지금은 없습니다.
 
 ## 문제 해결
 
