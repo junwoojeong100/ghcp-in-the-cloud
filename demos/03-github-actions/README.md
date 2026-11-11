@@ -152,7 +152,7 @@ scripts/cleanup.sh oidc        # 관리 ID, 역할 할당, azure-demo 환경 변
 
 | 증상 | 원인과 해결 |
 |---|---|
-| `Log in to Azure with OIDC`에서 `AADSTS70021`(일치하는 페더레이션 ID 레코드 없음) | subject가 맞지 않습니다. 저장소 이름(`<owner>/<name>`)과 환경 이름 `azure-demo`가 자격 증명과 같은지 확인하세요. 포크라면 `scripts/setup-github-oidc.sh --apply --repo <owner>/<name>`을 다시 실행합니다. |
+| `Log in to Azure with OIDC`에서 `AADSTS700213` 또는 `AADSTS70021`(일치하는 페더레이션 ID 레코드 없음) | subject가 맞지 않습니다. 실패한 단계의 로그에 `subject claim` 줄이 있으니 Azure의 페더레이션 자격 증명 subject와 비교하세요. 최근에 만든 저장소는 `repo:<owner>@<id>/<repo>@<id>:environment:azure-demo`처럼 숫자 ID가 들어간 형식을 보냅니다. `scripts/setup-github-oidc.sh --apply`(포크라면 `--repo <owner>/<name>` 추가)를 다시 실행하면 GitHub가 알려 주는 `sub_claim_prefix`로 자격 증명을 맞춥니다. |
 | `azure-demo 환경에 변수가 없습니다` 오류 | `scripts/setup-github-oidc.sh --apply`를 아직 실행하지 않았거나, 변수가 다른 저장소·환경에 저장됐습니다. Settings → Environments → azure-demo의 변수를 확인하세요. |
 | 실행이 **Waiting**에서 멈춤 | 환경 승인자의 승인을 기다리는 중입니다. **Review deployments**에서 승인하세요. 승인 알림을 받지 못하면 환경의 승인자 설정을 확인합니다. |
 | `AuthorizationFailed` | 역할 할당이 전파되는 데 몇 분 걸릴 수 있습니다. 잠시 뒤 **Re-run failed jobs**로 다시 실행하세요. 계속되면 `setup-github-oidc.sh`가 올바른 리소스 그룹을 대상으로 했는지 확인합니다. |

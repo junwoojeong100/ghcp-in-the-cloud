@@ -21,7 +21,8 @@ GitHub 환경 azure-demo 는 scripts/apply-repo-settings.sh 가 만듭니다(없
 
 하는 일
   1. 사용자 할당 관리 ID 와 페더레이션 자격 증명 만들기
-     subject: repo:<owner>/<repo>:environment:azure-demo (이 환경을 쓰는 잡만 로그인할 수 있습니다)
+     subject: <GitHub 의 sub_claim_prefix>:environment:azure-demo (이 환경을 쓰는 잡만 로그인할 수 있습니다)
+     (최근 저장소는 repo:<owner>@<id>/<repo>@<id> 형식, 오래된 저장소는 repo:<owner>/<repo> 입니다)
   2. 대상 리소스에만 역할 부여
      ACA: 리소스 그룹 Contributor, 레지스트리 AcrPush
      AKS: 클러스터 사용자 역할, 네임스페이스 범위 RBAC Writer, 레지스트리 AcrPush
@@ -135,10 +136,26 @@ if ((APPLY)); then
   principal_id="$(az identity show --name "$IDENTITY_NAME" --resource-group "$IDENTITY_RESOURCE_GROUP" --query principalId --output tsv)"
 fi
 
-subject="repo:$REPO:environment:$ENVIRONMENT_NAME"
-if ((APPLY)) && az identity federated-credential show --identity-name "$IDENTITY_NAME" \
-  --resource-group "$IDENTITY_RESOURCE_GROUP" --name "$CREDENTIAL_NAME" >/dev/null 2>&1; then
+# GitHub 가 토큰의 subject 앞부분(sub_claim_prefix)을 저장소마다 정합니다. 최근에 만든 저장소는 소유자와 저장소의
+# 숫자 ID 가 들어간 형식(repo:<owner>@<id>/<repo>@<id>)이 기본이라, 고정된 repo:<owner>/<repo> 로 만들면
+# 로그인이 AADSTS700213 으로 실패합니다. 그래서 GitHub 에 물어봐서 같은 값을 씁니다(물어볼 수 없으면 예전 형식).
+subject_prefix="repo:$REPO"
+if command -v gh >/dev/null 2>&1; then
+  detected_prefix="$(gh api "repos/$REPO/actions/oidc/customization/sub" --jq '.sub_claim_prefix // empty' 2>/dev/null || true)"
+  [[ -z "$detected_prefix" ]] || subject_prefix="$detected_prefix"
+fi
+subject="$subject_prefix:environment:$ENVIRONMENT_NAME"
+current_subject=''
+if ((APPLY)); then
+  current_subject="$(az identity federated-credential show --identity-name "$IDENTITY_NAME" \
+    --resource-group "$IDENTITY_RESOURCE_GROUP" --name "$CREDENTIAL_NAME" --query subject --output tsv 2>/dev/null || true)"
+fi
+if [[ -n "$current_subject" && "$current_subject" == "$subject" ]]; then
   log "페더레이션 자격 증명이 이미 있습니다: $CREDENTIAL_NAME"
+elif [[ -n "$current_subject" ]]; then
+  log "페더레이션 자격 증명의 subject 를 GitHub 가 보내는 값으로 고칩니다: $CREDENTIAL_NAME"
+  run az identity federated-credential update --name "$CREDENTIAL_NAME" --identity-name "$IDENTITY_NAME" \
+    --resource-group "$IDENTITY_RESOURCE_GROUP" --subject "$subject" --only-show-errors --output none
 else
   run az identity federated-credential create --name "$CREDENTIAL_NAME" --identity-name "$IDENTITY_NAME" \
     --resource-group "$IDENTITY_RESOURCE_GROUP" --issuer https://token.actions.githubusercontent.com \
