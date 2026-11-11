@@ -2,7 +2,7 @@
 
 ### 배경 (Context)
 
-데모 앱의 `POST /api/chat`은 호출할 때마다 Claude 추론 비용이 듭니다. 지금은 호출 횟수에 제한이 없어서, 잘못 만든 스크립트나 반복 클릭이 그대로 비용과 지연으로 이어질 수 있습니다.
+데모 앱의 `POST /api/chat`은 호출할 때마다 모델 추론 비용이 듭니다. 지금은 호출 횟수에 제한이 없어서, 잘못 만든 스크립트나 반복 클릭이 그대로 비용과 지연으로 이어질 수 있습니다.
 
 - 서버: `app/server.py` (표준 라이브러리 `http.server` 기반, `ThreadingHTTPServer`)
 - 테스트: `app/tests/` (`unittest`, 서버를 임시 포트에서 실행하고 `LLM_BACKEND=mock` 사용)

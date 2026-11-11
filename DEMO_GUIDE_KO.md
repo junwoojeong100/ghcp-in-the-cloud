@@ -23,7 +23,7 @@
 | 0:00 (7분) | [1. GitHub Copilot](demos/01-github-copilot/README.md) | AI 팀원에게 이슈를 맡기고, 저장소 지침으로 품질을 통제하며, 승인은 사람이 합니다. | 이슈 → 에이전트가 만든 PR → CI → Copilot code review |
 | 0:07 (6분) | [2. GitHub Repo](demos/02-github-repo/README.md) | main 보호와 보안 설정이 코드로 정의돼 있어 누구의 PR이든 같은 규칙을 통과합니다. | Rulesets와 CODEOWNERS, 위험한 PR이 CodeQL과 Dependency review에 걸리는 화면 |
 | 0:13 (7분) | [3. GitHub Actions](demos/03-github-actions/README.md) | 검증은 병렬로, 배포는 저장된 비밀 없이 OIDC로 하고 환경 승인으로 통제합니다. | CI의 job들, 환경 승인 → OIDC 로그인 → 새 리비전 |
-| 0:20 (7분) | [4. Microsoft Foundry](demos/04-microsoft-foundry/README.md) | 같은 코드가 API 키 없이 Entra ID로 Claude를 부르고, 모델과 effort는 설정으로 바꿉니다. | 로컬 호출, `/api/info`의 `auth`, `model`, `effort` |
+| 0:20 (7분) | [4. Microsoft Foundry](demos/04-microsoft-foundry/README.md) | 같은 코드가 API 키 없이 Entra ID로 gpt-6.1-sol을 부르고, 모델과 effort는 설정으로 바꿉니다. | 로컬 호출, `/api/info`의 `auth`, `model`, `effort` |
 | 0:27 (7분) | [5. Azure Container Apps](demos/05-azure-container-apps/README.md) | 클러스터 없이 서비스하고, 유휴 시 0으로 줄며, 리비전으로 카나리 배포를 합니다. | 스케일 투 제로, 0% → 10% → 100%, 롤백, 스케일 아웃 |
 | 0:34 (8분) | [6. AKS](demos/06-aks/README.md) | 같은 이미지를 쿠버네티스에서 무중단으로 갱신하고, 자동 확장하고, 비밀 없이 Azure를 부릅니다. | HPA, 롤링 업데이트와 롤백, 워크로드 ID |
 
@@ -31,7 +31,7 @@
 
 - 1 → 2: "AI가 만든 PR도 사람의 PR과 같은 규칙을 통과해야 합니다. 그 규칙을 저장소가 어떻게 강제하는지 보겠습니다."
 - 2 → 3: "규칙의 핵심은 자동 검증입니다. 검증과 배포를 Actions로, 비밀 없이 구성해 보겠습니다."
-- 3 → 4: "배포하는 앱은 Claude를 호출합니다. 그 연결도 키 없이 하는 방법을 보겠습니다."
+- 3 → 4: "배포하는 앱은 gpt-6.1-sol을 호출합니다. 그 연결도 키 없이 하는 방법을 보겠습니다."
 - 4 → 5: "이제 이 앱을 어디서 돌릴지 봅니다. 운영 부담이 가장 적은 Container Apps부터 보겠습니다."
 - 5 → 6: "더 세밀한 제어가 필요하면 AKS입니다. 같은 이미지가 그대로 올라갑니다."
 
@@ -52,7 +52,7 @@ Lite 코스는 Demo 2와 Demo 6을 건너뜁니다. 질문이 나오면 해당 �
 
 ### 하루 전까지
 
-- [ ] 계정과 권한: Azure 구독(Owner, 또는 Contributor와 User Access Administrator), GitHub 저장소 관리자 권한, Copilot 라이선스(cloud agent 사용 가능)를 확인합니다. Claude 배포에는 Enterprise 또는 MCA-E 구독이 필요합니다([Demo 4](demos/04-microsoft-foundry/README.md) 참고).
+- [ ] 계정과 권한: Azure 구독(Owner, 또는 Contributor와 User Access Administrator), GitHub 저장소 관리자 권한, Copilot 라이선스(cloud agent 사용 가능)를 확인합니다. gpt-6.1-sol은 쿼터만 있으면 됩니다(Claude를 쓸 때만 Enterprise 또는 MCA-E 구독이 필요합니다)([Demo 4](demos/04-microsoft-foundry/README.md) 참고).
 - [ ] 도구: bash 4 이상, Python 3.12, `az`, `gh`(`gh auth login`), `jq`, `kubectl`과 `kubelogin`(`az aks install-cli`), `docker`(선택)를 설치합니다.
 - [ ] 연습용 저장소(포크)를 준비합니다. 룰셋과 보안 설정을 바꾸는 스크립트는 연습용 저장소에서 먼저 실행하세요.
 - [ ] 한 번 끝까지 리허설합니다. 이 키트는 정적 검사와 로컬 실행으로 확인했고, 실제 Azure 배포는 아직 실행해 보지 않았습니다.
@@ -61,14 +61,13 @@ Lite 코스는 Demo 2와 Demo 6을 건너뜁니다. 질문이 나오면 해당 �
 
 ```bash
 az login
-export CLAUDE_ORGANIZATION_NAME="<조직 이름>"
 scripts/deploy-foundry.sh              # Demo 4, 몇 분
 scripts/deploy-aca.sh                  # Demo 5, 출력되는 URL과 비밀번호를 적어 둡니다
 scripts/deploy-aks.sh                  # Demo 6, 5~10분. 출력되는 비밀번호를 적어 둡니다
 scripts/setup-github-oidc.sh --apply   # Demo 3, 배포 대상이 먼저 있어야 합니다
 ```
 
-위 순서에서 `deploy-aca.sh`와 `deploy-aks.sh`는 `mock` 백엔드로 배포됩니다. Demo 5와 6의 시연 목적(스케일, 카나리, 롤링 업데이트)에는 충분하고 모델 호출 비용이 없으며, 화면에도 `mock`이라고 표시됩니다. Demo 4는 별도 터미널에서 `source .azure/foundry.env`를 실행한 뒤 로컬 앱으로 시연합니다. 배포한 앱까지 Claude에 연결하려면 `deploy-aca.sh`나 `deploy-aks.sh`를 실행하기 전에 같은 셸에서 `source .azure/foundry.env`를 실행하세요. 그러면 스모크 테스트는 `--expect-backend foundry`로, 부하 테스트는 `--path /healthz`로 실행해야 합니다([Demo 5](demos/05-azure-container-apps/README.md) 참고). Foundry를 쓰지 않으면 `scripts/deploy-foundry.sh` 줄도 건너뛰세요.
+위 순서에서 `deploy-aca.sh`와 `deploy-aks.sh`는 `mock` 백엔드로 배포됩니다. Demo 5와 6의 시연 목적(스케일, 카나리, 롤링 업데이트)에는 충분하고 모델 호출 비용이 없으며, 화면에도 `mock`이라고 표시됩니다. Demo 4는 별도 터미널에서 `source .azure/foundry.env`를 실행한 뒤 로컬 앱으로 시연합니다. 배포한 앱까지 모델에 연결하려면 `deploy-aca.sh`나 `deploy-aks.sh`를 실행하기 전에 같은 셸에서 `source .azure/foundry.env`를 실행하세요. 그러면 스모크 테스트는 `--expect-backend foundry`로, 부하 테스트는 `--path /healthz`로 실행해야 합니다([Demo 5](demos/05-azure-container-apps/README.md) 참고). Foundry를 쓰지 않으면 `scripts/deploy-foundry.sh` 줄도 건너뛰세요.
 
 데모별로 미리 해 둘 일입니다.
 
@@ -93,7 +92,7 @@ scripts/setup-github-oidc.sh --apply   # Demo 3, 배포 대상이 먼저 있어�
 
 - **오래 걸리는 것은 미리 돌려 두세요.** 에이전트 작업, CodeQL 분석, 클러스터와 이미지 빌드는 결과 화면을 먼저 열어 두고 "이렇게 끝납니다"로 이어 가면 흐름이 끊기지 않습니다. 라이브로 시작한 작업은 완료를 기다리지 말고 설명을 이어 가다가 돌아오세요.
 - **각 데모의 "성공 기준"을 소리 내어 확인하세요.** 청중이 무엇을 보고 있는지 분명해집니다.
-- **mock 백엔드는 숨기지 마세요.** 화면의 백엔드 칩이 `mock`이면 "스케일과 배포를 보여 주려고 모델 호출은 흉내 냅니다"라고 말하고, 실제 Claude 호출은 Demo 4에서 보여 줍니다.
+- **mock 백엔드는 숨기지 마세요.** 화면의 백엔드 칩이 `mock`이면 "스케일과 배포를 보여 주려고 모델 호출은 흉내 냅니다"라고 말하고, 실제 모델 호출은 Demo 4에서 보여 줍니다.
 - **effort `max`는 응답이 느릴 수 있습니다.** 시간이 빠듯하면 `FOUNDRY_EFFORT`를 낮춰 실행하고(Demo 4의 4단계), 깊게 추론하는 만큼 느리다고 설명하세요.
 
 ## 문제가 생기면 (대체 시연)

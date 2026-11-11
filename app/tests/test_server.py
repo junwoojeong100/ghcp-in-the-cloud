@@ -1,5 +1,6 @@
 import base64
 import http.client
+import io
 import json
 import os
 import re
@@ -13,6 +14,7 @@ import unittest
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 from app import server
 
@@ -243,9 +245,11 @@ def thinking_block():
 
 
 class FoundryBackendTests(ServerTestCase):
+    """Claude deployments go through the Anthropic client."""
+
     def setUp(self):
         super().setUp()
-        os.environ.update(LLM_BACKEND="foundry", FOUNDRY_RESOURCE="demo-resource")
+        os.environ.update(LLM_BACKEND="foundry", FOUNDRY_RESOURCE="demo-resource", FOUNDRY_PROVIDER="anthropic")
         patcher = patch("app.server.AnthropicFoundry")
         self.client_class = patcher.start()
         self.addCleanup(patcher.stop)
@@ -253,7 +257,7 @@ class FoundryBackendTests(ServerTestCase):
         self.create.return_value.content = [thinking_block(), text_block("안녕하세요")]
 
     def test_api_key_mode_calls_claude_sonnet_5_5_with_max_effort(self):
-        os.environ["ANTHROPIC_FOUNDRY_API_KEY"] = "test-key"
+        os.environ.update(ANTHROPIC_FOUNDRY_API_KEY="test-key", FOUNDRY_MODEL="claude-sonnet-5-5")
         reply = self.chat("안녕")
 
         self.assertEqual(reply.json()["answer"], "안녕하세요")
@@ -363,6 +367,81 @@ class FoundryBackendTests(ServerTestCase):
     def test_credential_errors_point_to_the_identity_setup(self):
         credential_error = type("CredentialUnavailableError", (Exception,), {})
         self.assertIn("Workload Identity", server.error_hint(credential_error("no credential")))
+
+
+def openai_response(text="안녕하세요", finish_reason="stop"):
+    body = {"choices": [{"message": {"content": text}, "finish_reason": finish_reason}]}
+    return io.BytesIO(json.dumps(body).encode())
+
+
+class FoundryOpenAIBackendTests(ServerTestCase):
+    """gpt-6.1-sol (the default deployment) goes through Foundry's OpenAI-compatible endpoint, keyless with Entra ID."""
+
+    def setUp(self):
+        super().setUp()
+        os.environ.update(LLM_BACKEND="foundry", FOUNDRY_RESOURCE="demo-resource")
+        self.urlopen = self.enterContext(patch("app.server.urlopen"))
+        self.urlopen.return_value.__enter__.side_effect = lambda: openai_response()
+        self.enterContext(patch("app.server._token_provider", return_value=lambda: "entra-token"))
+
+    def sent(self):
+        request = self.urlopen.call_args.args[0]
+        return request, json.loads(request.data)
+
+    def test_default_deployment_uses_the_openai_endpoint_with_an_entra_id_token(self):
+        reply = self.chat("안녕")
+
+        self.assertEqual(reply.json()["answer"], "안녕하세요")
+        request, body = self.sent()
+        self.assertEqual(request.full_url, "https://demo-resource.services.ai.azure.com/openai/v1/chat/completions")
+        self.assertEqual(request.get_header("Authorization"), "Bearer entra-token")
+        self.assertIsNone(request.get_header("Api-key"))
+        self.assertEqual(self.urlopen.call_args.kwargs["timeout"], 180.0)
+        self.assertEqual(body["model"], "gpt-6.1-sol")
+        self.assertEqual(body["max_completion_tokens"], 4_096)
+        self.assertEqual(body["messages"], [{"role": "system", "content": server.SYSTEM_PROMPT}, {"role": "user", "content": "안녕"}])
+
+    def test_max_effort_means_xhigh_because_gpt_has_no_max_level(self):
+        self.chat()
+        self.assertEqual(self.sent()[1]["reasoning_effort"], "xhigh")
+        os.environ["FOUNDRY_EFFORT"] = "low"
+        self.chat()
+        self.assertEqual(self.sent()[1]["reasoning_effort"], "low")
+
+    def test_api_key_is_sent_in_the_api_key_header_instead_of_a_token(self):
+        os.environ["FOUNDRY_API_KEY"] = "test-key"
+        self.chat()
+        request, _ = self.sent()
+        self.assertEqual(request.get_header("Api-key"), "test-key")
+        self.assertIsNone(request.get_header("Authorization"))
+
+    def test_info_reports_the_effective_model_effort_and_auth(self):
+        info = self.call("GET", "/api/info").json()
+        self.assertEqual((info["backend"], info["model"], info["effort"], info["auth"]), ("foundry", "gpt-6.1-sol", "xhigh", "entra-id"))
+
+    def test_the_provider_can_be_forced_for_deployments_with_custom_names(self):
+        os.environ.update(FOUNDRY_MODEL="my-sonnet", FOUNDRY_PROVIDER="openai")
+        self.chat()
+        self.assertEqual(self.sent()[1]["model"], "my-sonnet")
+        os.environ["FOUNDRY_PROVIDER"] = "mistral"
+        reply = self.chat()
+        self.assertEqual(reply.status, 503)
+        self.assertIn("FOUNDRY_PROVIDER", reply.json()["hint"])
+
+    def test_http_errors_become_502_with_an_actionable_hint(self):
+        for code, expected in ((403, "Cognitive Services User"), (404, "FOUNDRY_MODEL"), (429, "쿼터")):
+            with self.subTest(code=code):
+                self.urlopen.side_effect = HTTPError("https://demo", code, "error", {}, None)
+                with self.assertLogs("cloud-copilot-demo", level="WARNING"):
+                    reply = self.chat()
+                self.assertEqual(reply.status, 502)
+                self.assertIn(expected, reply.json()["hint"])
+
+    def test_empty_answer_explains_the_finish_reason(self):
+        self.urlopen.return_value.__enter__.side_effect = lambda: openai_response("", "length")
+        answer = self.chat().json()["answer"]
+        self.assertIn("stop_reason=length", answer)
+        self.assertIn("FOUNDRY_MAX_TOKENS", answer)
 
 
 class GracefulShutdownTests(unittest.TestCase):

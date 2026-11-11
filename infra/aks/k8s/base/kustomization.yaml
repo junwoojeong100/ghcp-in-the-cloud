@@ -22,5 +22,5 @@ configMapGenerator:
   - name: cloud-copilot-demo-config
     literals:
       - LLM_BACKEND=mock
-      - FOUNDRY_MODEL=claude-sonnet-5-5
+      - FOUNDRY_MODEL=gpt-6.1-sol
       - FOUNDRY_EFFORT=max

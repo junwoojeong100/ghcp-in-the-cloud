@@ -38,7 +38,7 @@
 
    레지스트리, 관리 ID, Log Analytics, Container Apps 환경을 만들고 이미지를 빌드한 뒤 앱을 배포합니다. 끝에 **URL, 사용자, 비밀번호**가 출력되니 적어 두세요. 비밀번호를 직접 정하려면 `DEMO_PASSWORD`를 지정합니다. 기본 리소스 그룹은 `rg-cloud-copilot-aca`, 리전은 `koreacentral`입니다.
 
-   Foundry의 Claude를 쓰려면 먼저 Demo 4를 진행한 뒤 같은 셸에서 `source .azure/foundry.env`를 실행하고 이 스크립트를 실행하세요.
+   Foundry의 모델을 쓰려면 먼저 Demo 4를 진행한 뒤 같은 셸에서 `source .azure/foundry.env`를 실행하고 이 스크립트를 실행하세요.
 4. **시연 셸 준비**:
 
    ```bash
@@ -166,5 +166,5 @@ scripts/cleanup.sh aca             # Container Apps 리소스 그룹을 지웁�
 이 데모는 단독으로 끝까지 진행됩니다. 함께 쓰면 이야기가 이어집니다.
 
 - **Demo 3 (GitHub Actions)**: `deploy-aca.yml`이 OIDC로 로그인해 이 앱에 새 리비전을 올립니다. 카나리 상태에서는 새 리비전이 0%로 만들어지므로 이 데모의 `promote`와 이어집니다.
-- **Demo 4 (Foundry)**: `source .azure/foundry.env` 후 `scripts/deploy-aca.sh`를 실행하면 앱이 mock 대신 Claude를 호출하고, 앱의 관리 ID가 비밀 없이 인증합니다. 이때 `/api/info`가 `backend=foundry`, `auth=entra-id`를 보여 줍니다.
+- **Demo 4 (Foundry)**: `source .azure/foundry.env` 후 `scripts/deploy-aca.sh`를 실행하면 앱이 mock 대신 gpt-6.1-sol을 호출하고, 앱의 관리 ID가 비밀 없이 인증합니다. 이때 `/api/info`가 `backend=foundry`, `auth=entra-id`를 보여 줍니다.
 - **Demo 6 (AKS)**: 같은 이미지를 AKS에도 올립니다. 마지막의 "AKS와 ACA 선택 가이드"에서 두 데모를 비교하세요.

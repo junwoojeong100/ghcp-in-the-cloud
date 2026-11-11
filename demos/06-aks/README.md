@@ -39,7 +39,7 @@
 
    클러스터, 레지스트리, 워크로드 ID를 만들고 이미지를 빌드한 뒤 매니페스트를 적용합니다. 끝에 **비밀번호**가 한 번 출력되니 적어 두세요(직접 정하려면 `DEMO_PASSWORD`). 기본 리소스 그룹은 `rg-cloud-copilot-aks`, 리전은 `koreacentral`, 노드 크기는 `Standard_D2s_v5`입니다. 클러스터 권한이 적용되길 기다리는 메시지가 몇 번 나올 수 있으며 정상입니다.
 
-   Foundry의 Claude를 쓰려면 먼저 Demo 4를 진행한 뒤 같은 셸에서 `source .azure/foundry.env`를 실행하고 이 스크립트를 실행하세요.
+   Foundry의 모델을 쓰려면 먼저 Demo 4를 진행한 뒤 같은 셸에서 `source .azure/foundry.env`를 실행하고 이 스크립트를 실행하세요.
 4. **v2 이미지를 미리 빌드**해 둡니다. 롤링 업데이트 시연에서는 이미 올라가 있는 이미지로 교체만 합니다.
 
    ```bash
@@ -226,7 +226,7 @@ scripts/cleanup.sh aks             # AKS 리소스 그룹을 지웁니다 (확�
 이 데모는 단독으로 끝까지 진행됩니다. 함께 쓰면 이야기가 이어집니다.
 
 - **Demo 3 (GitHub Actions)**: `deploy-aks.yml`을 실행하면(`gh workflow run deploy-aks.yml`) OIDC로 로그인해 이미지를 빌드하고 같은 롤링 업데이트를 합니다. 이 파이프라인의 ID는 클러스터 사용자 역할과 이 네임스페이스에 한정된 RBAC Writer 역할만 가집니다.
-- **Demo 4 (Foundry)**: `source .azure/foundry.env` 후 `scripts/deploy-aks.sh`를 실행하면 파드가 워크로드 ID로 Claude를 호출하고 `/api/info`가 `backend=foundry`, `auth=entra-id`를 보여 줍니다.
+- **Demo 4 (Foundry)**: `source .azure/foundry.env` 후 `scripts/deploy-aks.sh`를 실행하면 파드가 워크로드 ID로 gpt-6.1-sol을 호출하고 `/api/info`가 `backend=foundry`, `auth=entra-id`를 보여 줍니다.
 - **Demo 5 (ACA)**: 같은 이미지를 서버리스로 운영합니다. 아래 선택 가이드로 두 방식을 비교하세요.
 
 ### AKS와 ACA 선택 가이드

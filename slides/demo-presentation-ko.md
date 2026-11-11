@@ -45,7 +45,7 @@
 | 18 | 모델 선택권과 키 없는 보안 연결 | 가치 | 약 1분 |
 | 19 | 시연 흐름: Microsoft Foundry | 시연 흐름 | 약 5.5분 |
 | 20 | 데모 영상: Microsoft Foundry | 데모 영상 | – |
-| 21 | 핵심 코드: AnthropicFoundry + Entra ID | 핵심 코드 | 약 1분 |
+| 21 | 핵심 코드: OpenAI 호환 엔드포인트 + Entra ID | 핵심 코드 | 약 1분 |
 | 22 | 서버리스 컨테이너, 스케일 투 제로, 리비전 카나리 | 가치 | 약 1분 |
 | 23 | 시연 흐름: Azure Container Apps | 시연 흐름 | 약 7분 |
 | 24 | 데모 영상: Azure Container Apps | 데모 영상 | – |
@@ -102,7 +102,7 @@
 | 1 | Copilot | 이슈 → 에이전트 PR → 리뷰 → 사람 merge | 7분 | 4분 |
 | 2 | Repo | Rulesets · CODEOWNERS · 위험한 PR 차단 | 6분 | – |
 | 3 | Actions | 병렬 CI와 비밀 없는 OIDC 배포 | 7분 | 4분 |
-| 4 | Foundry | 키 없이 Claude 호출 · /api/info | 7분 | 3분 |
+| 4 | Foundry | 키 없이 모델 호출 · /api/info | 7분 | 3분 |
 | 5 | ACA | 스케일 투 제로 · 리비전 카나리 | 7분 | 4분 |
 | 6 | AKS | 롤링 업데이트 · 자동 확장 · 워크로드 ID | 8분 | – |
 
@@ -137,7 +137,7 @@
 ### 말할 내용
 
 - 왼쪽부터 보겠습니다. 개발자는 로컬이나 Codespaces에서 작업하고, 코드는 GitHub 저장소로 갑니다. Copilot이 PR을 만들고, 룰셋과 CI가 검사하고, Actions가 배포합니다.
-- 오른쪽은 Azure입니다. Actions는 이미지를 ACR에 올리고, Container Apps와 AKS가 그 이미지를 받아 실행하며, 앱은 Microsoft Foundry의 Claude를 호출합니다.
+- 오른쪽은 Azure입니다. Actions는 이미지를 ACR에 올리고, Container Apps와 AKS가 그 이미지를 받아 실행하며, 앱은 Microsoft Foundry의 gpt-6.1-sol을 호출합니다.
 - 주황색 선에 주목해 주세요. 이 선이 모두 아이덴티티 흐름이고 저장된 키가 없습니다. 로컬은 az login, Actions는 OIDC, Container Apps는 관리 ID, AKS는 워크로드 ID를 씁니다.
 
 ### 시연 큐
@@ -185,7 +185,7 @@
 
 ### 화면 구성
 
-- 흐름: 브라우저 UI → `POST /api/chat` → Python 앱(stdlib, `app/server.py`) → Entra ID 토큰 → Microsoft Foundry(Claude Sonnet 5.5, effort `max`)
+- 흐름: 브라우저 UI → `POST /api/chat` → Python 앱(stdlib, `app/server.py`) → Entra ID 토큰 → Microsoft Foundry(gpt-6.1-sol, effort `xhigh`)
 - `GET /healthz`: 인증 없음, 플랫폼 프로브용
 - `GET /api/info`: 인증 필요, `backend` `auth` `model` `effort` `platform` `instance` `revision`
 - `POST /api/chat`: 데모 인증 뒤
@@ -193,7 +193,7 @@
 
 ### 말할 내용
 
-- 데모에 쓰는 앱은 아주 작은 챗 앱입니다. 브라우저에서 질문하면 /api/chat이 Microsoft Foundry의 Claude Sonnet 5.5를 effort max로 호출하고, 답변과 함께 어느 플랫폼과 리비전이 응답했는지 화면에 보여 줍니다.
+- 데모에 쓰는 앱은 아주 작은 챗 앱입니다. 브라우저에서 질문하면 /api/chat이 Microsoft Foundry의 gpt-6.1-sol을 높은 effort로 호출하고, 답변과 함께 어느 플랫폼과 리비전이 응답했는지 화면에 보여 줍니다.
 - 엔드포인트는 셋입니다. /healthz는 플랫폼 프로브용이라 인증이 없고, /api/info는 backend, auth, model, effort 같은 설정을 보여 주며, /api/chat은 데모 인증 뒤에 있습니다.
 - 컨테이너 이미지는 하나입니다. 로컬과 Codespaces, Container Apps, AKS에서 같은 이미지가 돌고, 달라지는 것은 Entra ID 토큰을 얻는 경로뿐입니다.
 
@@ -583,23 +583,23 @@ steps:
 ### 화면 구성
 
 - 데모 4 · Microsoft Foundry · 약 7분 (Lite 3분)
-- 필요한 것: Azure 구독(Enterprise·MCA-E) + 쿼터
+- 필요한 것: Azure 구독 + gpt-6.1-sol 쿼터
 - 독립 시연: GitHub·ACA·AKS 불필요
 - 이점 카드:
-  - **Azure 거버넌스** — Entra ID·RBAC·쿼터·리전을 다른 Azure 리소스와 같은 방식으로 씁니다. (시연: 배포 목록의 Claude 배포)
+  - **Azure 거버넌스** — Entra ID·RBAC·쿼터·리전을 다른 Azure 리소스와 같은 방식으로 씁니다. (시연: 배포 목록의 gpt-6.1-sol 배포)
   - **배포 이름으로 교체** — 앱은 배포 이름만 압니다. 모델 교체는 환경 변수 하나면 됩니다. (시연: FOUNDRY_MODEL만 변경)
-  - **effort = max** — 요청마다 추론 깊이를 지정하고 환경 변수로 low부터 max까지 조절합니다. (시연: /api/info의 effort: max)
+  - **effort = xhigh** — 요청마다 추론 깊이를 지정하고 환경 변수로 low부터 xhigh까지 조절합니다. (시연: /api/info의 effort: xhigh)
   - **키 없는 인증** — 로컬은 az login, ACA는 관리 ID, AKS는 워크로드 ID로 같은 코드가 동작합니다. (시연: /api/info의 auth: entra-id)
 
 ### 말할 내용
 
-- 네 번째는 Microsoft Foundry입니다. Claude Sonnet 5.5를 Azure의 거버넌스 안에서 키 없이 쓰는 방법을 보여 드립니다.
+- 네 번째는 Microsoft Foundry입니다. gpt-6.1-sol을 Azure의 거버넌스 안에서 키 없이 쓰는 방법을 보여 드립니다.
 - Entra ID 인증, RBAC, 쿼터와 리전 같은 Azure 리소스의 관리 방식이 그대로 적용됩니다. 앱은 모델이 아니라 배포 이름만 알기 때문에 모델 교체가 설정 변경으로 끝납니다.
-- 요청마다 effort를 max로 보내 깊은 추론을 씁니다. 깊게 생각하는 만큼 시간과 토큰을 더 쓴다는 점도 함께 말씀드립니다.
+- 요청마다 effort를 지정해 깊은 추론을 씁니다. 이 키트의 기본값 max는 GPT가 받는 가장 높은 단계인 xhigh로 전달됩니다. 깊게 생각하는 만큼 시간과 토큰을 더 쓴다는 점도 함께 말씀드립니다.
 
 ### 시연 큐
 
-- Claude on Foundry는 Enterprise 또는 MCA-E 구독이 필요하고, 배포하면 Anthropic 상용 약관에 동의한 것으로 처리됩니다. 지원 리전은 eastus2, swedencentral, westus2입니다.
+- gpt-6.1-sol은 모델 쿼터가 있는 구독이면 배포할 수 있고, 지원 리전은 eastus2, swedencentral, westus2입니다. Claude를 쓰려면 Enterprise 또는 MCA-E 구독과 Anthropic 약관 동의가 필요합니다.
 - 배포(scripts/deploy-foundry.sh)는 몇 분 걸리므로 시연 전에 끝내 둡니다.
 
 [예상 시간] 약 1분 · 데모 4 전체 약 7분
@@ -614,16 +614,16 @@ steps:
 
 | 단계 | 시간 | 명령 · 클릭 | 성공 기준 | Lite |
 |---|---|---|---|---|
-| 1. 배포 확인 | 1.5분 | `az cognitiveservices account`<br>`deployment list ... -o table`<br>`(또는 ai.azure.com 포털)` | claude-sonnet-5-5 배포, API 키 없음 |  |
+| 1. 배포 확인 | 1.5분 | `az cognitiveservices account`<br>`deployment list ... -o table`<br>`(또는 ai.azure.com 포털)` | gpt-6.1-sol 배포, API 키 없음 |  |
 | 2. 키 없이 호출 | 2.5분 | `az login`<br>`source .azure/foundry.env`<br>`python -m app.server` | 한국어 답변, 인스턴스 표시 | Lite |
-| 3. /api/info 확인 | 1.5분 | `curl -s -u "demo:$DEMO_PASSWORD"`<br>`http://127.0.0.1:8080/api/info` | auth: entra-id, model, effort: max | Lite |
+| 3. /api/info 확인 | 1.5분 | `curl -s -u "demo:$DEMO_PASSWORD"`<br>`http://127.0.0.1:8080/api/info` | auth: entra-id, model, effort: xhigh | Lite |
 
 - 옵션 · 모델·effort 교체 (1.5분): FOUNDRY_EFFORT=low python -m app.server · FOUNDRY_MODEL=<다른 배포 이름>
 - 참고: 배포(deploy-foundry.sh)는 시연 전에 끝내 두세요. 역할 부여 직후에는 전파 지연이 있을 수 있습니다.
 
 ### 말할 내용
 
-- 배포된 Claude를 확인하고, 연결 정보 파일에 API 키가 없다는 점을 먼저 보여 드립니다.
+- 배포된 모델을 확인하고, 연결 정보 파일에 API 키가 없다는 점을 먼저 보여 드립니다.
 - az login만 한 상태에서 로컬 앱을 띄워 한국어로 질문합니다. 코드에는 키가 없고 DefaultAzureCredential이 토큰을 받아 옵니다.
 - 마지막으로 /api/info에서 인증 방식이 entra-id이고 모델과 effort가 설정대로인지 확인합니다.
 
@@ -631,7 +631,7 @@ steps:
 
 - 1) cat .azure/foundry.env → source .azure/foundry.env → az cognitiveservices account deployment list --resource-group "$FOUNDRY_RESOURCE_GROUP" --name "$FOUNDRY_RESOURCE" --output table.
 - 2) az login → source .azure/foundry.env → export DEMO_PASSWORD='<임의 값>' → python -m app.server → http://127.0.0.1:8080(사용자 demo) → 한국어로 질문.
-- 3) curl -s -u "demo:$DEMO_PASSWORD" http://127.0.0.1:8080/api/info → backend foundry · auth entra-id · model claude-sonnet-5-5 · effort max.
+- 3) curl -s -u "demo:$DEMO_PASSWORD" http://127.0.0.1:8080/api/info → backend foundry · auth entra-id · model gpt-6.1-sol · effort xhigh.
 - 4) (옵션) FOUNDRY_EFFORT=low python -m app.server로 같은 질문을 비교합니다.
 - 역할을 방금 부여했다면 전파에 몇 분이 걸려 첫 호출이 권한 오류일 수 있습니다. Lite 경로: 2·3단계.
 
@@ -661,7 +661,7 @@ steps:
 
 ---
 
-## 21. 핵심 코드: AnthropicFoundry + Entra ID
+## 21. 핵심 코드: OpenAI 호환 엔드포인트 + Entra ID
 
 *핵심 코드 · 데모 4 / 6 · Microsoft Foundry · 핵심 코드*
 
@@ -673,31 +673,32 @@ steps:
 token = get_bearer_token_provider(
     DefaultAzureCredential(),
     "https://ai.azure.com/.default")
-client = AnthropicFoundry(
-    resource="<foundry-resource>",
-    azure_ad_token_provider=token)
-resp = client.messages.create(
-    model="claude-sonnet-5-5",  # Foundry 배포 이름
-    max_tokens=4096,
-    output_config={"effort": "max"},
-    messages=[{"role": "user", "content": q}])
+headers = {"Authorization":
+           f"Bearer {token()}"}
+body = {
+    "model": "gpt-6.1-sol",  # 배포 이름
+    "max_completion_tokens": 4096,
+    "reasoning_effort": "xhigh",
+    "messages": messages}
+url = f"https://{resource}.services.ai.azure.com"
+      "/openai/v1/chat/completions"
 ```
 
 - 콜아웃:
   - **model = 배포 이름** — 모델 ID가 아닌 Foundry 배포 이름입니다.
   - **키가 없다** — `DefaultAzureCredential`이 토큰을 얻습니다.
-  - **effort = max** — 추론은 깊어지고 시간·토큰은 늘어납니다.
+  - **effort = xhigh** — GPT의 최고 단계입니다. 추론은 깊어지고 시간·토큰은 늘어납니다.
 
 ### 말할 내용
 
-- 코드는 이 열한 줄입니다. get_bearer_token_provider가 DefaultAzureCredential로 Entra ID 토큰을 받아 오고, AnthropicFoundry 클라이언트에 토큰 공급자를 넘깁니다. API 키는 어디에도 없습니다.
+- 코드는 이 열두 줄입니다. get_bearer_token_provider가 DefaultAzureCredential로 Entra ID 토큰을 받아 오고, 그 토큰을 Authorization 헤더에 실어 Foundry의 OpenAI 호환 엔드포인트를 부릅니다. API 키는 어디에도 없습니다.
 - model 인자는 모델 ID가 아니라 Foundry의 배포 이름입니다. 다른 모델을 배포했다면 이름만 바꾸면 됩니다.
-- output_config의 effort를 max로 지정했고, 낮추려면 환경 변수만 바꾸면 됩니다.
+- reasoning_effort로 추론 깊이를 지정했고, 낮추려면 환경 변수만 바꾸면 됩니다.
 
 ### 시연 큐
 
 - 로컬은 az login, ACA는 관리 ID, AKS는 워크로드 ID가 같은 DefaultAzureCredential 경로로 토큰을 만든다고 다음 두 데모의 복선으로 말합니다.
-- 필요한 역할은 Cognitive Services User 하나입니다. API 키(ANTHROPIC_FOUNDRY_API_KEY)는 선택적 대안일 뿐입니다.
+- 필요한 역할은 Cognitive Services User 하나입니다. API 키(FOUNDRY_API_KEY)는 선택적 대안일 뿐입니다. Claude 배포는 이름이 claude로 시작하면 자동으로 AnthropicFoundry 경로를 씁니다.
 
 [예상 시간] 약 1분 (시연 대기 시간에 겹쳐 진행)
 
@@ -1004,7 +1005,7 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 ### 말할 내용
 
 - 오늘 본 것을 한 줄로 이으면 이렇습니다. 아이디어가 이슈가 되고, Copilot이 PR을 만들고, 룰셋과 CI가 검증합니다.
-- 통과한 코드는 Actions가 OIDC로 Azure에 로그인해 이미지를 ACR에 올리고, Container Apps나 AKS가 그 이미지를 실행하며, 앱은 Foundry의 Claude를 키 없이 부릅니다.
+- 통과한 코드는 Actions가 OIDC로 Azure에 로그인해 이미지를 ACR에 올리고, Container Apps나 AKS가 그 이미지를 실행하며, 앱은 Foundry의 gpt-6.1-sol을 키 없이 부릅니다.
 - 아래 띠를 보세요. 사람의 로그인부터 CI, 컨테이너까지 모든 구간이 키 대신 아이덴티티로 연결되어 있습니다. 이것이 오늘 전하고 싶은 가장 큰 메시지입니다.
 
 ### 시연 큐
@@ -1023,14 +1024,14 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 
 1. **키 없는 인증** — API 키 대신 Entra ID를 씁니다. az login, 관리 ID, 워크로드 ID, OIDC.
 2. **최소 권한** — 역할은 필요한 범위에만 주고 `id-token: write`는 배포 job에만 둡니다.
-3. **모델 약관·구독** — Claude는 Enterprise 또는 MCA-E 구독과 Anthropic 약관 동의가 필요합니다.
+3. **모델 약관·구독** — gpt-6.1-sol은 쿼터면 충분합니다. Claude는 Enterprise·MCA-E 구독과 Anthropic 약관이 필요합니다.
 4. **쿼터·리전** — 지원 리전과 모델 쿼터를 미리 확인하세요. 부족하면 용량이나 리전을 바꿉니다.
 5. **공개 엔드포인트** — `/healthz`만 무인증, 나머지는 데모 비밀번호입니다. 실서비스는 조직 인증으로.
 6. **정리와 비용** — 시연 직후 `cleanup.sh`로 정리합니다. AKS는 과금이 이어지고 Foundry는 purge가 필요합니다.
 
 ### 말할 내용
 
-- 도입 전에 확인할 여섯 가지입니다. 첫째, 키가 없습니다. 둘째, 권한은 필요한 범위에만 줍니다. 셋째, Claude on Foundry는 Enterprise 또는 MCA-E 구독이 필요하고 Anthropic 약관에 동의해야 합니다.
+- 도입 전에 확인할 여섯 가지입니다. 첫째, 키가 없습니다. 둘째, 권한은 필요한 범위에만 줍니다. 셋째, 모델 약관과 구독입니다. gpt-6.1-sol은 모델 쿼터만 있으면 되고, Claude를 쓰려면 Enterprise 또는 MCA-E 구독과 Anthropic 약관 동의가 필요합니다.
 - 넷째, 모델 쿼터와 지원 리전을 미리 확인하세요. 다섯째, 데모 앱은 공개 주소에 올라가므로 /healthz를 제외한 모든 경로에 데모 비밀번호를 걸었고, 실서비스에서는 조직의 인증으로 바꿔야 합니다.
 - 마지막으로 정리입니다. 특히 AKS는 노드가 계속 비용을 만들기 때문에 시연이 끝나면 바로 cleanup.sh로 지우고, Foundry는 purge까지 해야 쿼터가 돌아옵니다.
 
@@ -1053,14 +1054,14 @@ kubectl get hpa,pods -n cloud-copilot-demo --watch
 | GitHub Copilot | 이슈를 PR로, 규칙은 저장소 지침으로 | 에이전트 PR + Copilot 리뷰 |
 | GitHub Repo | main 보호·코드 오너·보안 검사를 코드로 | 위험한 PR의 merge 차단 |
 | GitHub Actions | 병렬 CI, 비밀 없는 OIDC 배포 | Secrets 목록이 비어 있음 |
-| Microsoft Foundry | Azure 거버넌스 안의 Claude, 키 없는 호출 | /api/info의 auth: entra-id |
+| Microsoft Foundry | Azure 거버넌스 안의 gpt-6.1-sol, 키 없는 호출 | /api/info의 auth: entra-id |
 | Container Apps | 서버리스: 스케일 투 제로와 카나리 | Replicas 0 → 1, 90/10 |
 | AKS | 롤링 업데이트·HPA·워크로드 ID | READY 유지, 파드 증가 |
 
 ### 말할 내용
 
 - 한 장으로 정리합니다. 각 서비스가 가져다 주는 이점과, 오늘 화면에서 직접 확인한 증거를 짝지었습니다.
-- Copilot은 이슈를 PR로 바꾸고, 저장소는 규칙을 코드로 강제하고, Actions는 비밀 없이 배포하고, Foundry는 키 없이 Claude를 쓰게 하고, Container Apps와 AKS는 같은 이미지를 서로 다른 운영 방식으로 실행합니다.
+- Copilot은 이슈를 PR로 바꾸고, 저장소는 규칙을 코드로 강제하고, Actions는 비밀 없이 배포하고, Foundry는 키 없이 모델을 쓰게 하고, Container Apps와 AKS는 같은 이미지를 서로 다른 운영 방식으로 실행합니다.
 
 ### 시연 큐
 
@@ -1119,7 +1120,7 @@ LLM_BACKEND=mock python -m app.server
   - `azure-demo` 환경 승인자 지정
 - **Azure**
   - 구독 Owner (또는 Contributor + User Access Administrator)
-  - Claude용 Enterprise 또는 MCA-E 구독, 리전 쿼터
+  - gpt-6.1-sol 쿼터가 있는 구독·리전 (Claude는 Enterprise 또는 MCA-E)
   - 시연 30~60분 전 배포: foundry → aca → aks → oidc
 - **로컬 도구**
   - bash 4+, Python 3.12
@@ -1150,7 +1151,7 @@ LLM_BACKEND=mock python -m app.server
 | 문제 | 증상 | 해결 |
 |---|---|---|
 | RBAC 전파 지연 | 403 · AuthorizationFailed | 역할 부여 직후에는 수 분이 걸립니다. 잠시 뒤 다시 시도하세요. |
-| Claude 쿼터·리전 | 배포가 쿼터·용량 오류 | `CAPACITY`를 줄이거나 `LOCATION`을 바꿉니다. Enterprise·MCA-E 필요. |
+| 모델 쿼터·리전 | 배포가 쿼터·용량 오류 | `CAPACITY`를 줄이거나 `LOCATION`을 바꿉니다. (Claude는 Enterprise·MCA-E 필요) |
 | ACR 이름 충돌 | 이름이 이미 사용 중 | 이름은 전역 고유입니다. `NAME_PREFIX`를 바꿔 다시 배포합니다. |
 | kubelogin · Azure RBAC | kubectl 인증 오류 | `az login` → `az aks install-cli` → `kubelogin convert-kubeconfig --login azurecli` |
 | OIDC subject 불일치 | AADSTS70021 | 저장소·환경 이름 확인, `setup-github-oidc.sh --apply --repo <owner>/<name>` |
@@ -1158,7 +1159,7 @@ LLM_BACKEND=mock python -m app.server
 ### 말할 내용
 
 - 리허설에서 가장 자주 만나는 문제 다섯 가지입니다. 대부분 몇 분 기다리거나 이름을 맞추면 해결됩니다.
-- 역할을 방금 줬다면 전파에 몇 분이 걸립니다. Claude는 쿼터와 리전이 맞아야 배포되고, ACR 이름은 전역에서 유일해야 합니다.
+- 역할을 방금 줬다면 전파에 몇 분이 걸립니다. 모델은 쿼터와 리전이 맞아야 배포되고, ACR 이름은 전역에서 유일해야 합니다.
 - AKS는 Entra ID와 Azure RBAC로만 접근하므로 kubelogin이 필요하고, OIDC 로그인이 실패하면 subject의 저장소 이름과 환경 이름부터 확인합니다.
 
 ### 시연 큐

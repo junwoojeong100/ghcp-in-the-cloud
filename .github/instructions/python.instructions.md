@@ -19,9 +19,9 @@ applyTo: 'app/**/*.py'
 - Inject clocks and clients (arguments or attributes) so tests do not patch globals or sleep in real time.
 
 ## Foundry client
-- Use `anthropic.AnthropicFoundry`. `model` is the Foundry deployment name (`FOUNDRY_MODEL`, default `claude-sonnet-5-5`).
-- Keyless by default: `DefaultAzureCredential` with `get_bearer_token_provider(credential, "https://ai.azure.com/.default")`. Use `ANTHROPIC_FOUNDRY_API_KEY` only when it is set.
-- Keep `output_config={"effort": ...}` defaulting to `max` and the default of `max_tokens` at `4096`.
+- GPT deployments (default `gpt-6.1-sol`) call the OpenAI-compatible endpoint with `urllib` and an Entra ID token; Claude deployments use `anthropic.AnthropicFoundry`. `model` is the Foundry deployment name (`FOUNDRY_MODEL`).
+- Keyless by default: `DefaultAzureCredential` with `get_bearer_token_provider(credential, "https://ai.azure.com/.default")`. Use `FOUNDRY_API_KEY` (or the older `ANTHROPIC_FOUNDRY_API_KEY`) only when it is set.
+- Keep the effort defaulting to `max` (GPT receives `xhigh`, Claude receives `output_config={"effort": ...}`) and the default of the token cap at `4096`.
 
 ## Tests (`app/tests/`)
 - `unittest` only. Run `python -m unittest discover -s app/tests -v`.

@@ -20,7 +20,7 @@
 | `copilot.mp4` | 설정 파일 → 이슈 할당 → 에이전트 세션·PR·CI → Copilot 리뷰와 사람 merge | 실제 PR의 변경과 통과한 체크, 리뷰, 사람이 승인한 결과 | [Demo 1](../demos/01-github-copilot/README.md). 에이전트 작업을 미리 시작해 대기 시간을 줄입니다. |
 | `repo.mp4` | Codespaces 테스트 → Rulesets·CODEOWNERS → 의도적으로 위험한 PR의 검사 결과 → Dependabot | 활성 룰셋과 보안 검사가 PR을 막는 화면 | [Demo 2](../demos/02-github-repo/README.md). 연습용 저장소를 사용하고 위험한 PR은 merge하지 않습니다. |
 | `actions.mp4` | PR의 병렬 CI → 저장된 Actions 비밀이 없는 설정 → 승인 게이트와 OIDC 배포 | 통과한 CI, 승인 단계, 실제 배포 실행의 성공 결과 | [Demo 3](../demos/03-github-actions/README.md). Azure 배포 장면은 실제 구독에서 수행하고 화면에 자격 증명을 노출하지 않습니다. |
-| `foundry.mp4` | Claude 배포 확인 → Entra ID로 실제 호출 → `/api/info` 확인 | `backend`, `auth`, `model`, `effort` 값과 앱의 응답 | [Demo 4](../demos/04-microsoft-foundry/README.md). API 키 대신 문서의 키 없는 인증 흐름을 사용합니다. |
+| `foundry.mp4` | gpt-6.1-sol 배포 확인 → Entra ID로 실제 호출 → `/api/info` 확인 | `backend`, `auth`, `model`, `effort` 값과 앱의 응답 | [Demo 4](../demos/04-microsoft-foundry/README.md). API 키 대신 문서의 키 없는 인증 흐름을 사용합니다. |
 | `aca.mp4` | 복제본 0개 확인 → 요청으로 기동 → 리비전 카나리와 롤백 → 부하 기반 스케일 아웃 | 실제 Container Apps 리비전·복제본 상태와 앱 응답 | [Demo 5](../demos/05-azure-container-apps/README.md). 전파 및 기동 대기 시간은 환경에 따라 달라집니다. |
 | `aks.mp4` | 파드와 HPA → 롤링 업데이트·롤백 → 워크로드 ID → Pod Security 거부 확인 | 준비된 파드, 실제 롤아웃 결과, 비밀 없는 ID 설정 | [Demo 6](../demos/06-aks/README.md). 실패 장면은 안내에 있는 안전한 거부 테스트만 사용합니다. |
 
