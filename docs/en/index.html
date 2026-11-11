@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub × Azure Cloud Demo — Recorded demo (English)</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 56rem; margin: 0 auto; padding: 32px 20px; }
+  h1 { font-size: 1.5rem; margin: 0 0 8px; }
+  h2 { font-size: 1.15rem; margin: 32px 0 8px; }
+  li { margin: 8px 0; }
+  video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; border-radius: 6px; }
+  .sub { opacity: .75; }
+  .chapters { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 4px 24px; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); }
+  .chapters li { margin: 0; }
+  .chapters a { display: flex; gap: 12px; padding: 6px 8px; border-radius: 4px; text-decoration: none; }
+  .chapters a:hover, .chapters a:focus-visible { background: rgba(127, 127, 127, .18); }
+  .chapters a[aria-current="true"] { background: rgba(127, 127, 127, .28); font-weight: 600; }
+  .chapters time { font-variant-numeric: tabular-nums; opacity: .7; }
+</style>
+</head>
+<body>
+<main>
+  <h1>GitHub × Azure Cloud Demo · Recorded demo</h1>
+  <p>One issue taken all the way to production, for real, on GitHub and Azure: GitHub Copilot, the repository settings, GitHub Actions, Microsoft Foundry, Azure Container Apps and AKS. About 24 minutes.</p>
+
+  <section aria-labelledby="video-title">
+    <h2 id="video-title">Watch the demo</h2>
+    <video id="demo-video" controls preload="metadata" poster="poster.jpg">
+      <source src="../ghcp-in-the-cloud-demo-en.mp4" type="video/mp4">
+      Your browser cannot play this video. <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/download/recorded-demo-slides/ghcp-in-the-cloud-demo-en.mp4">Download the MP4</a>.
+    </video>
+    <p class="sub">The English captions are part of the picture. Pick a chapter to jump to it.</p>
+    <ol class="chapters" id="chapters">
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=0" data-start="0"><time>0:00</time> Opening</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=59.07" data-start="59.07"><time>0:59</time> Demo 1 · GitHub Copilot</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=256.5" data-start="256.5"><time>4:16</time> Demo 2 · GitHub Repo</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=460" data-start="460"><time>7:40</time> Demo 3 · GitHub Actions</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=674.43" data-start="674.43"><time>11:14</time> Demo 4 · Microsoft Foundry</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=846.47" data-start="846.47"><time>14:06</time> Demo 5 · Azure Container Apps</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=1099.83" data-start="1099.83"><time>18:19</time> Demo 6 · AKS</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=1325.53" data-start="1325.53"><time>22:05</time> Foundry connection · ACA and AKS</a></li>
+      <li><a href="../ghcp-in-the-cloud-demo-en.mp4#t=1418.03" data-start="1418.03"><time>23:38</time> Summary</a></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="files-title">
+    <h2 id="files-title">Slides, video files and guides</h2>
+    <ul>
+      <li>
+        <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_EN.pptx">Recorded-demo slides</a>
+        · <a href="../GHCP_in_the_Cloud_Demo_EN.pptx">Download the PPTX</a>
+        <br><span class="sub">45 slides with the 32 demo videos embedded. They open in the Office web viewer; press ▶ on a slide to play its video.</span>
+      </li>
+      <li>
+        <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/download/recorded-demo-slides/ghcp-in-the-cloud-demo-en.mp4">Download the video (MP4, 1080p)</a>
+        · <a href="ghcp-in-the-cloud-demo-en.srt">Captions as text (SRT)</a>
+        · <a href="ghcp-in-the-cloud-demo-en.chapters.txt">Chapter list</a>
+      </li>
+      <li>
+        <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud/blob/main/en/README.md">English guides</a>:
+        <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud/blob/main/en/DEMO_GUIDE.md">demo guide</a>,
+        <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud/tree/main/en/demos">one guide per demo</a>
+        and the <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud/tree/main/en/slides">presentation slides</a> with speaker notes.
+      </li>
+    </ul>
+  </section>
+
+  <p><a href="../">한국어 페이지</a> · <a href="https://github.com/junwoojeong100/ghcp-in-the-cloud">Source repository</a></p>
+</main>
+<script>
+  (function () {
+    var video = document.getElementById("demo-video");
+    var links = Array.prototype.slice.call(document.querySelectorAll("#chapters a"));
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        video.currentTime = Number(link.getAttribute("data-start"));
+        var started = video.play();
+        if (started && started.catch) { started.catch(function () {}); }
+      });
+    });
+
+    video.addEventListener("timeupdate", function () {
+      var current = links[0];
+      links.forEach(function (link) {
+        if (video.currentTime >= Number(link.getAttribute("data-start"))) { current = link; }
+      });
+      links.forEach(function (link) {
+        if (link === current) { link.setAttribute("aria-current", "true"); } else { link.removeAttribute("aria-current"); }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

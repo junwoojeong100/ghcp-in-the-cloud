@@ -1,8 +1,8 @@
 name: Pages
 
-# Publishes the recorded-demo slides at https://junwoojeong100.github.io/ghcp-in-the-cloud/.
-# The PPTX files are assets of the `recorded-demo-slides` release, not files in git, so clones and
-# copies made from this template stay small. To change a deck, replace the asset with
+# Publishes the recorded-demo slides and the English demo video at https://junwoojeong100.github.io/ghcp-in-the-cloud/.
+# The PPTX and MP4 files are assets of the `recorded-demo-slides` release, not files in git, so clones and
+# copies made from this template stay small. To change one, replace the asset with
 # `gh release upload recorded-demo-slides <file> --clobber` and run this workflow again.
 on:
   push:
@@ -47,14 +47,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Collect the page and the slides
+      - name: Collect the pages and the release files
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir _site
-          cp docs/index.html _site/
-          gh release download "$SLIDES_RELEASE" --repo "$GITHUB_REPOSITORY" --pattern '*.pptx' --dir _site
-          ls -l _site
+          cp -R docs/. _site/
+          gh release download "$SLIDES_RELEASE" --repo "$GITHUB_REPOSITORY" --pattern '*.pptx' --pattern '*.mp4' --dir _site
+          ls -lR _site
 
       - name: Upload the site
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
