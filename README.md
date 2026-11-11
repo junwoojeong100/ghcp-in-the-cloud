@@ -192,8 +192,9 @@ infra/
 scripts/              배포, 카나리, 부하, 스모크 테스트, 정리 스크립트(bash)
 demos/                01~06 데모별 시연 문서와 보조 파일
 slides/               발표 슬라이드(PPTX), 슬라이드별 진행 대본(Markdown), 생성 스크립트
+docs/                 녹화 데모 슬라이드를 게시하는 GitHub Pages 소개 페이지(PPTX는 릴리스 파일)
 .github/
-  workflows/          ci, codeql, dependency-review, deploy-aca, deploy-aks, copilot-setup-steps
+  workflows/          ci, codeql, dependency-review, deploy-aca, deploy-aks, copilot-setup-steps, pages
   copilot-instructions.md, instructions/, prompts/, agents/    Copilot 설정(Demo 1)
   rulesets/, CODEOWNERS, dependabot.yml, 템플릿             저장소 거버넌스(Demo 2)
 .devcontainer/        Codespaces와 dev container 설정
