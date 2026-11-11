@@ -54,8 +54,8 @@ Lite 코스는 Demo 2와 Demo 6을 건너뜁니다. 질문이 나오면 해당 �
 
 - [ ] 계정과 권한: Azure 구독(Owner, 또는 Contributor와 User Access Administrator), GitHub 저장소 관리자 권한, Copilot 라이선스(cloud agent 사용 가능)를 확인합니다. gpt-6.1-sol은 쿼터만 있으면 됩니다(Claude를 쓸 때만 Enterprise 또는 MCA-E 구독이 필요합니다)([Demo 4](demos/04-microsoft-foundry/README.md) 참고).
 - [ ] 도구: bash 4 이상, Python 3.12, `az`, `gh`(`gh auth login`), `jq`, `kubectl`과 `kubelogin`(`az aks install-cli`), `docker`(선택)를 설치합니다.
-- [ ] 연습용 저장소(포크)를 준비합니다. 룰셋과 보안 설정을 바꾸는 스크립트는 연습용 저장소에서 먼저 실행하세요.
-- [ ] 한 번 끝까지 리허설합니다. 이 키트는 정적 검사와 로컬 실행으로 확인했고, 실제 Azure 배포는 아직 실행해 보지 않았습니다.
+- [ ] 연습용 저장소를 새로 만듭니다. 룰셋과 보안 설정을 바꾸고 PR을 여는 스크립트는 원본이 아니라 연습용 저장소에서 실행하세요. 원본을 템플릿으로 쓰면 매번 깨끗한 상태로 시작합니다: `gh repo create <owner>/<name> --template junwoojeong100/ghcp-in-the-cloud --public --clone`. 포크해도 됩니다. 비공개로 만든다면 그 플랜에서 룰셋과 코드 스캐닝을 쓸 수 있는지 먼저 확인하세요.
+- [ ] 한 번 끝까지 리허설합니다. 이 키트는 정적 검사와 로컬 실행으로 확인했고, 연습용 저장소에서 여섯 데모를 Azure에 배포해 끝까지 실행하고 녹화했습니다. 내 구독과 권한에서도 한 번 확인하세요.
 
 ### 시연 30~60분 전 (한 셸에서 순서대로)
 
@@ -113,7 +113,7 @@ scripts/cleanup.sh all                 # 확인 질문에 y. 질문 없이 진�
 
 - 이 키트가 만든 Azure 리소스(Container Apps, AKS, Foundry, GitHub Actions용 관리 ID, `azure-demo` 환경 변수)를 지웁니다. 일부만 지우려면 `aca`, `aks`, `foundry`, `oidc`를 지정하세요. AKS 노드는 계속 과금되므로 시연 직후에 지우는 것을 권합니다.
 - Demo 2의 위험한 PR은 merge하지 말고 닫은 뒤 브랜치를 지웁니다(`demos/02-github-repo/risky-pr/pr-body.md`의 "정리" 참고).
-- 연습용 저장소의 시연용 이슈와 Codespace도 정리하세요.
+- 연습용 저장소는 통째로 지우는 것이 가장 깔끔합니다(`gh repo delete <owner>/<name>`, 권한 오류가 나면 `gh auth refresh -s delete_repo`). 원본을 지우지 않도록 이름을 꼭 확인하세요. 남겨 둔다면 시연용 이슈와 Codespace를 정리하세요.
 
 ## 관련 문서
 
