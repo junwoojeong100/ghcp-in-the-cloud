@@ -228,7 +228,7 @@ gh repo create <owner>/<name> --template junwoojeong100/ghcp-in-the-cloud --publ
 
 녹화 영상과 슬라이드에 보이는 `ghcp-in-the-cloud-practice`(국문)와 `ghcp-in-the-cloud-practice-en`(영문)은 녹화에 쓴 연습용 저장소였고 지금은 없습니다.
 
-영문판(문서와 스크립트를 영어로 옮긴 키트)은 이 저장소에 없습니다. `ghcp-in-the-cloud-practice-en`을 지운 뒤 영문판 문서와 스크립트 전체는 작성자의 로컬 폴더 `~/GitHub/ghcp-in-the-cloud-practice-en`에만 남아 있습니다. 영문 슬라이드 마지막의 저장소 링크도 영문판이 아니라 이 저장소(국문 문서)를 가리킵니다.
+영문판(문서와 스크립트를 영어로 옮긴 키트)은 이 저장소에 없고 공개하지 않습니다. 영문 슬라이드 마지막의 저장소 링크도 영문판이 아니라 이 저장소(국문 문서)를 가리킵니다.
 
 ## 문제 해결
 
