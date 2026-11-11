@@ -1,4 +1,4 @@
-"""Cloud Copilot Demo: a small stdlib HTTP server in front of Claude on Microsoft Foundry.
+"""Cloud Copilot Demo: a small stdlib HTTP server in front of a model on Microsoft Foundry (default gpt-6.1-sol).
 
 The same file runs locally, in Docker, on Azure Container Apps and on AKS.
 Set LLM_BACKEND=mock to run everything without Azure or any installed dependency.
@@ -18,7 +18,9 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.error import HTTPError
 from urllib.parse import urlsplit
+from urllib.request import Request, urlopen
 
 try:  # The mock backend must keep working when optional dependencies are missing.
     from anthropic import AnthropicFoundry
@@ -27,9 +29,12 @@ except ImportError:
 
 logger = logging.getLogger("cloud-copilot-demo")
 
-DEFAULT_MODEL = "claude-sonnet-5-5"  # Foundry *deployment* name, not the model id.
+DEFAULT_MODEL = "gpt-6.1-sol"  # Foundry *deployment* name, not the model id.
 DEFAULT_EFFORT = "max"
 EFFORT_LEVELS = ("low", "medium", "high", "xhigh", "max")
+# "max" is a Claude level. GPT deployments accept low, medium, high and xhigh, so max means xhigh there.
+OPENAI_EFFORT_ALIASES = {"max": "xhigh"}
+PROVIDERS = ("anthropic", "openai")
 DEFAULT_MAX_TOKENS = 4_096
 MAX_MOCK_LATENCY_MS = 10_000
 FOUNDRY_SCOPE = "https://ai.azure.com/.default"
@@ -48,7 +53,7 @@ MOCK_PREFIX = "[mock] 실제 모델을 호출하지 않은 예시 응답입니�
 MOCK_DEFAULT = (
     "mock 백엔드는 Azure 없이도 배포 파이프라인과 플랫폼 기능을 시연할 수 있게 해 줍니다. "
     "GitHub Actions, AKS, ACA, Foundry, Copilot에 대해 물어보면 주제별 예시 답변을 보여 드립니다. "
-    "실제 Claude 응답을 보려면 LLM_BACKEND=foundry 와 FOUNDRY_RESOURCE 를 설정하세요."
+    "실제 모델 응답을 보려면 LLM_BACKEND=foundry 와 FOUNDRY_RESOURCE 를 설정하세요."
 )
 MOCK_TOPICS = (
     (
@@ -104,6 +109,29 @@ class ConfigurationError(RuntimeError):
     """The selected backend cannot be used because a setting is missing or invalid."""
 
 
+class FoundryHTTPError(RuntimeError):
+    """HTTP error from the OpenAI-compatible Foundry endpoint. Subclass names match ERROR_HINTS."""
+
+
+class AuthenticationError(FoundryHTTPError):
+    pass
+
+
+class PermissionDeniedError(FoundryHTTPError):
+    pass
+
+
+class NotFoundError(FoundryHTTPError):
+    pass
+
+
+class RateLimitError(FoundryHTTPError):
+    pass
+
+
+HTTP_ERRORS = {401: AuthenticationError, 403: PermissionDeniedError, 404: NotFoundError, 429: RateLimitError}
+
+
 def selected_backend():
     return os.getenv("LLM_BACKEND", "").strip().lower() or "foundry"
 
@@ -113,6 +141,9 @@ def foundry_settings():
     effort = os.getenv("FOUNDRY_EFFORT", "").strip().lower() or DEFAULT_EFFORT
     if effort not in EFFORT_LEVELS:
         raise ConfigurationError(f"FOUNDRY_EFFORT 는 {', '.join(EFFORT_LEVELS)} 중 하나여야 합니다.")
+    explicit_provider = os.getenv("FOUNDRY_PROVIDER", "").strip().lower()
+    if explicit_provider and explicit_provider not in PROVIDERS:
+        raise ConfigurationError(f"FOUNDRY_PROVIDER 는 {', '.join(PROVIDERS)} 중 하나여야 합니다.")
     raw_tokens = os.getenv("FOUNDRY_MAX_TOKENS", "").strip()
     try:
         max_tokens = int(raw_tokens) if raw_tokens else DEFAULT_MAX_TOKENS
@@ -123,10 +154,26 @@ def foundry_settings():
     return model, effort, max_tokens
 
 
+def provider(model):
+    """anthropic for Claude deployments, openai for everything else. FOUNDRY_PROVIDER overrides the guess from the name."""
+    explicit = os.getenv("FOUNDRY_PROVIDER", "").strip().lower()
+    if explicit in PROVIDERS:
+        return explicit
+    return "anthropic" if model.lower().startswith("claude") else "openai"
+
+
+def resolved_effort(model, effort):
+    return effort if provider(model) == "anthropic" else OPENAI_EFFORT_ALIASES.get(effort, effort)
+
+
+def foundry_api_key():
+    return os.getenv("FOUNDRY_API_KEY", "").strip() or os.getenv("ANTHROPIC_FOUNDRY_API_KEY", "").strip()
+
+
 def auth_mode():
     if selected_backend() == "mock":
         return "none"
-    return "api-key" if os.getenv("ANTHROPIC_FOUNDRY_API_KEY", "").strip() else "entra-id"
+    return "api-key" if foundry_api_key() else "entra-id"
 
 
 @functools.lru_cache(maxsize=1)
@@ -157,8 +204,20 @@ def foundry_answer(message):
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,62}", resource):
         raise ConfigurationError("FOUNDRY_RESOURCE 에는 호스트 이름이 아니라 리소스 이름만 입력하세요.")
     model, effort, max_tokens = foundry_settings()
+    if provider(model) == "anthropic":
+        return claude_answer(resource, model, effort, max_tokens, message)
+    return openai_answer(resource, model, resolved_effort(model, effort), max_tokens, message)
 
-    client = _foundry_client(resource, os.getenv("ANTHROPIC_FOUNDRY_API_KEY", "").strip())
+
+def no_text_answer(stop_reason):
+    return (
+        f"모델이 텍스트 응답을 반환하지 않았습니다 (stop_reason={stop_reason}). "
+        "추론에 토큰을 모두 쓴 경우 FOUNDRY_MAX_TOKENS 를 늘려 보세요."
+    )
+
+
+def claude_answer(resource, model, effort, max_tokens, message):
+    client = _foundry_client(resource, foundry_api_key())
     response = client.messages.create(
         model=model,
         max_tokens=max_tokens,
@@ -170,12 +229,45 @@ def foundry_answer(message):
     text = "\n".join(
         block.text for block in response.content if getattr(block, "type", None) == "text"
     ).strip()
-    if not text:
-        return (
-            f"모델이 텍스트 응답을 반환하지 않았습니다 (stop_reason={response.stop_reason}). "
-            "추론에 토큰을 모두 쓴 경우 FOUNDRY_MAX_TOKENS 를 늘려 보세요."
-        )
-    return text
+    return text or no_text_answer(response.stop_reason)
+
+
+def upstream_message(exc):
+    """The service's own error text (never the prompt), shortened for the log."""
+    try:
+        return str(json.load(exc)["error"]["message"])[:200]
+    except (ValueError, KeyError, TypeError, OSError):
+        return exc.reason or "error"
+
+
+def openai_answer(resource, model, effort, max_tokens, message):
+    """GPT deployments use Foundry's OpenAI-compatible v1 endpoint; stdlib only, keyless with Entra ID."""
+    api_key = foundry_api_key()
+    headers = {"Content-Type": "application/json"}
+    if api_key:
+        headers["api-key"] = api_key
+    else:
+        headers["Authorization"] = f"Bearer {_token_provider()()}"
+    body = {
+        "model": model,
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": message}],
+        "max_completion_tokens": max_tokens,
+        "reasoning_effort": effort,
+    }
+    request = Request(
+        f"https://{resource}.services.ai.azure.com/openai/v1/chat/completions",
+        data=json.dumps(body).encode("utf-8"),
+        headers=headers,
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+            payload = json.load(response)
+    except HTTPError as exc:
+        raise HTTP_ERRORS.get(exc.code, FoundryHTTPError)(f"HTTP {exc.code}: {upstream_message(exc)}") from None
+    choice = (payload.get("choices") or [{}])[0]
+    text = ((choice.get("message") or {}).get("content") or "").strip()
+    return text or no_text_answer(choice.get("finish_reason"))
 
 
 def mock_latency_seconds():
@@ -235,11 +327,13 @@ def served_by():
 
 def runtime_info():
     mock = selected_backend() == "mock"
+    model = os.getenv("FOUNDRY_MODEL", "").strip() or DEFAULT_MODEL
+    effort = os.getenv("FOUNDRY_EFFORT", "").strip().lower() or DEFAULT_EFFORT
     return {
         "app": "cloud-copilot-demo",
         "backend": selected_backend(),
-        "model": "mock" if mock else os.getenv("FOUNDRY_MODEL", "").strip() or DEFAULT_MODEL,
-        "effort": None if mock else os.getenv("FOUNDRY_EFFORT", "").strip().lower() or DEFAULT_EFFORT,
+        "model": "mock" if mock else model,
+        "effort": None if mock else resolved_effort(model, effort),
         "auth": auth_mode(),
         "platform": runtime_platform(),
         **served_by(),

@@ -3,7 +3,7 @@
 // Deploy in two phases (scripts/deploy-aca.sh does this for you):
 //   1. deployApp=false -> registry + identity + environment (and the optional Foundry role)
 //   2. build the image into the registry, then deployApp=true -> the container app
-// The identity pulls from the registry and, if foundryResource is set, calls Claude
+// The identity pulls from the registry and, if foundryResource is set, calls the Foundry model
 // on Microsoft Foundry. No keys and no registry passwords are stored anywhere.
 targetScope = 'resourceGroup'
 
@@ -40,7 +40,7 @@ param foundryResource string = ''
 param foundryResourceGroup string = resourceGroup().name
 
 @description('Foundry deployment name of the model.')
-param foundryModel string = 'claude-sonnet-5-5'
+param foundryModel string = 'gpt-6.1-sol'
 
 @description('Reasoning effort the app requests from the model.')
 @allowed([

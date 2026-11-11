@@ -14,7 +14,7 @@ usage() {
 사용법: scripts/deploy-aks.sh [--yes]
 
 AKS 클러스터를 만들고 데모 앱을 배포합니다. 기본은 mock 백엔드라서 Foundry 없이도 동작합니다.
-Foundry 의 Claude 를 쓰려면 먼저 scripts/deploy-foundry.sh 를 실행하고
+Foundry 의 모델(기본 gpt-6.1-sol)을 쓰려면 먼저 scripts/deploy-foundry.sh 를 실행하고
 `source .azure/foundry.env` 한 뒤 이 스크립트를 실행하세요.
 
 필요한 도구: az, kubectl, kubelogin (az aks install-cli 로 kubectl 과 kubelogin 을 함께 설치), python3
@@ -29,9 +29,9 @@ Foundry 의 Claude 를 쓰려면 먼저 scripts/deploy-foundry.sh 를 실행하�
   DEMO_PASSWORD          데모 UI 비밀번호 (지정하지 않으면 자동 생성해 마지막에 한 번 보여 줍니다)
   PRINCIPAL_ID           클러스터 관리자 역할을 받을 사용자 객체 ID (로그인한 사용자)
   PRINCIPAL_TYPE         User | ServicePrincipal | Group (User)
-  FOUNDRY_RESOURCE       지정하면 mock 대신 이 Foundry 리소스의 Claude 를 호출합니다
+  FOUNDRY_RESOURCE       지정하면 mock 대신 이 Foundry 리소스의 모델을 호출합니다
   FOUNDRY_RESOURCE_GROUP Foundry 리소스 그룹 (RESOURCE_GROUP 과 같다고 봅니다)
-  FOUNDRY_MODEL          모델 배포 이름 (claude-sonnet-5-5)
+  FOUNDRY_MODEL          모델 배포 이름 (gpt-6.1-sol)
   FOUNDRY_EFFORT         low | medium | high | xhigh | max (max)
 
 옵션
@@ -61,7 +61,7 @@ NODE_VM_SIZE="${NODE_VM_SIZE:-Standard_D2s_v5}"
 IMAGE_TAG="${IMAGE_TAG:-v1}"
 FOUNDRY_RESOURCE="${FOUNDRY_RESOURCE:-}"
 FOUNDRY_RESOURCE_GROUP="${FOUNDRY_RESOURCE_GROUP:-$RESOURCE_GROUP}"
-FOUNDRY_MODEL="${FOUNDRY_MODEL:-claude-sonnet-5-5}"
+FOUNDRY_MODEL="${FOUNDRY_MODEL:-gpt-6.1-sol}"
 FOUNDRY_EFFORT="${FOUNDRY_EFFORT:-max}"
 
 [[ "$NAME_PREFIX" =~ ^[a-z][a-z0-9]{1,11}$ ]] || die "NAME_PREFIX 는 소문자/숫자 2~12자여야 합니다."

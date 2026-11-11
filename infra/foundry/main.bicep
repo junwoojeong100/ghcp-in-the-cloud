@@ -1,11 +1,13 @@
-// Microsoft Foundry account + project + one Claude deployment.
+// Microsoft Foundry account + project + one model deployment (default: gpt-6.1-sol).
 //
-// IMPORTANT: deploying a Claude model through this template accepts the Anthropic
+// Models sold directly by Azure (modelFormat OpenAI) deploy on any subscription that has quota.
+// IMPORTANT: deploying a Claude model (modelFormat Anthropic) accepts the Anthropic
 // commercial terms on behalf of your organization (modelProviderData). Review
 // https://www.anthropic.com/legal/commercial-terms and pass the real organization
-// name, country and industry. Claude on Foundry needs an Enterprise or MCA-E subscription.
+// name, country and industry. Claude on Foundry needs an Enterprise or MCA-E subscription
+// with Marketplace purchases enabled; Microsoft-internal subscriptions are rejected.
 //
-// The deployment is named after the model (for example `claude-sonnet-5-5`), which is
+// The deployment is named after the model (for example `gpt-6.1-sol`), which is
 // the default FOUNDRY_MODEL of the demo app, so no extra app setting is needed.
 targetScope = 'resourceGroup'
 
@@ -14,7 +16,7 @@ targetScope = 'resourceGroup'
 @maxLength(12)
 param namePrefix string = 'ccd'
 
-@description('Region. Claude models on Foundry are offered in these regions.')
+@description('Region. Claude models on Foundry are offered in these regions; gpt-6.1-sol is available in them as well.')
 @allowed([
   'eastus2'
   'swedencentral'
@@ -22,20 +24,26 @@ param namePrefix string = 'ccd'
 ])
 param location string = 'swedencentral'
 
-@description('Claude model to deploy. The deployment gets the same name; the app reads it as FOUNDRY_MODEL.')
-@minLength(1)
-param modelName string = 'claude-sonnet-5-5'
+@description('Model provider format: OpenAI (GPT models, sold by Azure) or Anthropic (Claude, needs the Anthropic terms).')
+@allowed([
+  'OpenAI'
+  'Anthropic'
+])
+param modelFormat string = 'OpenAI'
 
-@description('Model version.')
-param modelVersion string = '1'
+@description('Model to deploy. The deployment gets the same name; the app reads it as FOUNDRY_MODEL.')
+@minLength(1)
+param modelName string = 'gpt-6.1-sol'
+
+@description('Model version, for example 2026-09-29 for gpt-6.1-sol or 1 for Claude.')
+param modelVersion string = '2026-09-29'
 
 @description('GlobalStandard capacity in units of 1K tokens per minute (TPM). Must fit your quota.')
 @minValue(1)
 param capacity int = 25
 
-@description('Organization name submitted with the Anthropic terms (modelProviderData).')
-@minLength(1)
-param claudeOrganizationName string
+@description('Organization name submitted with the Anthropic terms (modelProviderData). Only used when modelFormat is Anthropic.')
+param claudeOrganizationName string = ''
 
 @description('Two-letter ISO country code of the organization.')
 @minLength(2)
@@ -133,17 +141,18 @@ resource claude 'Microsoft.CognitiveServices/accounts/deployments@2025-10-01-pre
   }
   properties: {
     model: {
-      format: 'Anthropic'
+      format: modelFormat
       name: modelName
       version: modelVersion
     }
     // Not in the published type definitions yet, but required by the service for Anthropic models.
+    // OpenAI models have no provider data, so the property is left out (null).
     #disable-next-line BCP037
-    modelProviderData: {
+    modelProviderData: modelFormat == 'Anthropic' ? {
       organizationName: claudeOrganizationName
       countryCode: claudeCountryCode
       industry: claudeIndustry
-    }
+    } : null
     versionUpgradeOption: 'OnceNewDefaultVersionAvailable'
     raiPolicyName: 'Microsoft.DefaultV2'
   }
@@ -162,8 +171,11 @@ output deploymentName string = claude.name
 @description('Resource group of the Foundry account.')
 output resourceGroupName string = resourceGroup().name
 
-@description('Base URL of the Anthropic-compatible Claude endpoint.')
+@description('Base URL of the Anthropic-compatible Claude endpoint (used when modelFormat is Anthropic).')
 output claudeBaseUrl string = 'https://${account.name}.services.ai.azure.com/anthropic'
+
+@description('Base URL of the OpenAI-compatible v1 endpoint (used when modelFormat is OpenAI).')
+output openAiBaseUrl string = 'https://${account.name}.services.ai.azure.com/openai/v1'
 
 @description('Endpoint of the Foundry project.')
 output projectEndpoint string = 'https://${account.name}.services.ai.azure.com/api/projects/${project.name}'

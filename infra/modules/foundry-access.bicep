@@ -1,4 +1,4 @@
-// Lets a workload identity call Claude on an existing Foundry account without keys.
+// Lets a workload identity call a model on an existing Foundry account without keys.
 // Deploy this module into the resource group that contains the Foundry account.
 targetScope = 'resourceGroup'
 

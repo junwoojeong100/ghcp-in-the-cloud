@@ -1,7 +1,7 @@
 # Copilot instructions — Cloud Copilot Demo
 
 ## What this repo is
-- A demo kit for Korean developers: one tiny app (Python 3.12 stdlib `http.server` + one HTML page; answers come from Claude Sonnet 5.5 on Microsoft Foundry) plus the GitHub and Azure setup around it.
+- A demo kit for Korean developers: one tiny app (Python 3.12 stdlib `http.server` + one HTML page; answers come from gpt-6.1-sol on Microsoft Foundry) plus the GitHub and Azure setup around it.
 - Six independent demos in `demos/`: `01-github-copilot`, `02-github-repo`, `03-github-actions`, `04-microsoft-foundry`, `05-azure-container-apps`, `06-aks`.
 - Layout: `app/` (server, UI, Dockerfile, `tests/`), `infra/foundry/`, `infra/aca/` and `infra/aks/` (Bicep; Kubernetes manifests in `infra/aks/k8s/`), `scripts/` (bash), `.github/` (workflows, instructions, prompts, agents), `demos/`, `slides/`.
 
@@ -18,7 +18,7 @@
 - `GET /healthz` is the only unauthenticated route (platform probes). Every other route needs HTTP Basic auth (user `demo`, password from `DEMO_PASSWORD`), checked before the request body is read.
 - Never log, echo or return secrets, API keys, tokens, passwords, `Authorization` headers or full prompts. Credentials come only from environment variables or platform secrets, never from source, tests, docs or examples.
 - Prefer keyless Microsoft Entra ID (`DefaultAzureCredential`, scope `https://ai.azure.com/.default`) over API keys. `FOUNDRY_MODEL` is the Foundry deployment name.
-- Keep the Claude Sonnet 5.5 default (`claude-sonnet-5-5`) with `effort=max` and `max_tokens=4096`.
+- Keep the gpt-6.1-sol default (`gpt-6.1-sol`) with `effort=max` (sent as `xhigh`, the highest level GPT accepts) and `max_tokens=4096`. Claude deployments (`FOUNDRY_PROVIDER=anthropic`) stay supported.
 - Keep `LLM_BACKEND=mock` working offline (no Azure, no network, no SDK import); demos and CI depend on it.
 - UI: render model output with `textContent`, never `innerHTML`.
 - Tests: `unittest` only, offline and deterministic. Every route needs tests for success, `401`, bad input and `/healthz` staying open.

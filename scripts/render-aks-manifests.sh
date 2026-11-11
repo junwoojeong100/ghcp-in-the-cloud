@@ -20,7 +20,7 @@ infra/aks/k8s/base 에 환경 값을 입히고 완성된 YAML 을 표준 출력�
   IMAGE_TAG           예: v1 (이미지에 구워진 APP_VERSION 과 같은 값으로 빌드해 두세요)
   WORKLOAD_CLIENT_ID  Workload Identity 용 관리 ID 의 클라이언트 ID (GUID)
 
-선택 환경 변수 (FOUNDRY_RESOURCE 를 지정하면 mock 대신 Foundry 의 Claude 를 호출합니다)
+선택 환경 변수 (FOUNDRY_RESOURCE 를 지정하면 mock 대신 Foundry 의 모델을 호출합니다)
   FOUNDRY_RESOURCE    Foundry 리소스 이름
   FOUNDRY_MODEL       모델 배포 이름
   FOUNDRY_EFFORT      low | medium | high | xhigh | max

@@ -1,6 +1,6 @@
 # Cloud Copilot Demo — GitHub × Microsoft Azure 발표용 데모 키트
 
-GitHub Copilot, GitHub(저장소·Actions), Microsoft Foundry, Azure Container Apps, AKS의 장점을 작은 앱 하나로 보여 주는 데모 키트입니다. 앱은 Microsoft Foundry의 Claude Sonnet 5.5로 질문에 답하고, 어느 플랫폼의 어느 리비전·인스턴스가 응답했는지 화면에 함께 보여 줍니다. 데모 6개는 각각 따로 시연할 수 있고, 발표 슬라이드와 시연 순서가 함께 들어 있습니다.
+GitHub Copilot, GitHub(저장소·Actions), Microsoft Foundry, Azure Container Apps, AKS의 장점을 작은 앱 하나로 보여 주는 데모 키트입니다. 앱은 Microsoft Foundry의 gpt-6.1-sol로 질문에 답하고, 어느 플랫폼의 어느 리비전·인스턴스가 응답했는지 화면에 함께 보여 줍니다. 데모 6개는 각각 따로 시연할 수 있고, 발표 슬라이드와 시연 순서가 함께 들어 있습니다.
 
 > **먼저 읽어 주세요**
 >
@@ -16,7 +16,7 @@ GitHub Copilot, GitHub(저장소·Actions), Microsoft Foundry, Azure Container A
 | GitHub Copilot | 이슈를 AI 팀원(cloud agent)에게 맡겨 PR로 받고, 저장소 지침으로 결과의 품질과 범위를 통제합니다. | 1 |
 | GitHub 저장소 | 브랜치 보호(Rulesets), 코드 오너, CodeQL, Dependabot, Codespaces를 파일과 스크립트로 정의합니다. | 2 |
 | GitHub Actions | PR마다 병렬 검증하고, 저장된 비밀 없이 OIDC로 Azure에 배포하며, 환경 승인으로 배포를 통제합니다. | 3 |
-| Microsoft Foundry | 같은 앱 코드가 API 키 없이 Microsoft Entra ID로 Claude를 호출합니다. 모델 배포와 effort는 설정으로 바꿉니다. | 4 |
+| Microsoft Foundry | 같은 앱 코드가 API 키 없이 Microsoft Entra ID로 모델(gpt-6.1-sol)을 호출합니다. 모델 배포와 effort는 설정으로 바꿉니다. | 4 |
 | Azure Container Apps | 클러스터 운영 없이 HTTPS 서비스를 올립니다. 요청이 없으면 0으로 줄고, 리비전으로 카나리 배포를 합니다. | 5 |
 | AKS | 무중단 롤링 업데이트, HPA 자동 확장, 워크로드 ID, Pod Security 기본값을 보여 줍니다. | 6 |
 
@@ -27,7 +27,7 @@ GitHub Copilot, GitHub(저장소·Actions), Microsoft Foundry, Azure Container A
 | 1 | [GitHub Copilot](demos/01-github-copilot/README.md) | 이슈 → 에이전트 PR → CI → Copilot code review → 사람 리뷰와 merge | 약 7분 | GitHub 저장소, Copilot 라이선스 |
 | 2 | [GitHub Repo](demos/02-github-repo/README.md) | main 보호와 보안 설정을 코드로 정의하고, 위험한 PR이 검사에 걸리는 모습 확인 | 약 6분 | GitHub 저장소(관리자 권한) |
 | 3 | [GitHub Actions](demos/03-github-actions/README.md) | 병렬 CI와 비밀 없는 OIDC 배포 | 약 7분 | GitHub 저장소(1단계), Azure 구독(2~3단계) |
-| 4 | [Microsoft Foundry](demos/04-microsoft-foundry/README.md) | Claude Sonnet 5.5 배포와 키 없는 호출 | 약 7분 | Azure 구독 |
+| 4 | [Microsoft Foundry](demos/04-microsoft-foundry/README.md) | gpt-6.1-sol 배포와 키 없는 호출 | 약 7분 | Azure 구독 |
 | 5 | [Azure Container Apps](demos/05-azure-container-apps/README.md) | 스케일 투 제로, 리비전 카나리, 부하에 따른 스케일 아웃 | 약 7분 | Azure 구독 |
 | 6 | [AKS](demos/06-aks/README.md) | 롤링 업데이트, HPA, 워크로드 ID, 보안 기본값 | 약 8분 | Azure 구독 |
 
@@ -48,7 +48,7 @@ flowchart LR
     acr["Azure Container Registry"]
     aca["Container Apps<br/>스케일 투 제로 · 리비전"]
     aks["AKS<br/>HPA · 롤링 업데이트"]
-    foundry["Microsoft Foundry<br/>Claude Sonnet 5.5"]
+    foundry["Microsoft Foundry<br/>gpt-6.1-sol"]
   end
   dev -->|"이슈 · PR"| repo
   copilot -->|"PR 작성 · 리뷰"| repo
@@ -74,7 +74,7 @@ flowchart LR
 | 1 Copilot | 필요 | 필요(cloud agent) | 불필요(선택 단계의 Azure MCP 질의만 `az login`) | 없음 |
 | 2 Repo | 필요(관리자 권한) | 3단계의 Copilot code review에만 | 불필요 | 없음 |
 | 3 Actions | 필요 | 불필요 | 2~3단계만 필요 | 없음. 배포 대상은 `scripts/deploy-aca.sh`로 만들면 되고 Demo 5를 따라 할 필요는 없습니다. |
-| 4 Foundry | 불필요 | 불필요 | 필요(Claude를 배포할 수 있는 구독) | 없음 |
+| 4 Foundry | 불필요 | 불필요 | 필요(gpt-6.1-sol 쿼터가 있는 구독) | 없음 |
 | 5 Container Apps | 불필요 | 불필요 | 필요 | 없음. Foundry 연결은 선택입니다. |
 | 6 AKS | 불필요 | 불필요 | 필요 | 없음. Foundry 연결은 선택입니다. |
 
@@ -131,7 +131,7 @@ scripts/install-dev-tools.sh --dir "$HOME/.local/bin"
 | 저장소 보안·룰셋·머지 옵션 적용 | `scripts/apply-repo-settings.sh [--apply]` | 2 |
 | 위험한 PR 만들기 | `demos/02-github-repo/risky-pr/make-risky-pr.sh` | 2 |
 | GitHub Actions용 OIDC 연동 | `scripts/setup-github-oidc.sh [--apply]` | 3 |
-| Foundry에 Claude 배포 | `CLAUDE_ORGANIZATION_NAME="<조직 이름>" scripts/deploy-foundry.sh` | 4 |
+| Foundry에 모델 배포(기본 gpt-6.1-sol) | `scripts/deploy-foundry.sh` (Claude는 `MODEL_NAME=claude-sonnet-5-5 CLAUDE_ORGANIZATION_NAME="<조직 이름>"`) | 4 |
 | Container Apps 배포 | `scripts/deploy-aca.sh` | 5 |
 | 리비전 카나리 (`status`, `deploy`, `canary`, `promote`, `rollback`, `probe`, `urls`) | `scripts/aca-canary.sh <명령>` | 5 |
 | 부하 생성 | `scripts/load-test.sh --url <앱 주소>` | 5 |
@@ -139,7 +139,7 @@ scripts/install-dev-tools.sh --dir "$HOME/.local/bin"
 | 배포된 앱 점검 | `scripts/smoke-test.sh [앱 주소]` | 3~6 |
 | 만든 리소스 정리 | `scripts/cleanup.sh <aca\|aks\|foundry\|oidc\|all>` | 전체 |
 
-Foundry의 Claude를 앱에 연결하려면 `scripts/deploy-foundry.sh`를 먼저 실행하고 `source .azure/foundry.env`를 한 뒤 `scripts/deploy-aca.sh` 또는 `scripts/deploy-aks.sh`를 실행합니다. 이 파일에는 백엔드, Foundry 리소스 이름, 배포 이름처럼 비밀이 아닌 값만 들어 있고 `.gitignore`에도 등록돼 있습니다. 자세한 흐름은 [Demo 4](demos/04-microsoft-foundry/README.md)에 있습니다.
+Foundry의 모델을 앱에 연결하려면 `scripts/deploy-foundry.sh`를 먼저 실행하고 `source .azure/foundry.env`를 한 뒤 `scripts/deploy-aca.sh` 또는 `scripts/deploy-aks.sh`를 실행합니다. 이 파일에는 백엔드, Foundry 리소스 이름, 배포 이름처럼 비밀이 아닌 값만 들어 있고 `.gitignore`에도 등록돼 있습니다. 자세한 흐름은 [Demo 4](demos/04-microsoft-foundry/README.md)에 있습니다.
 
 ## 엔드포인트
 
@@ -169,10 +169,12 @@ curl -u "demo:$DEMO_PASSWORD" -H 'Content-Type: application/json' \
 | `DEMO_PASSWORD` | Basic 인증 비밀번호(사용자 이름은 `demo`). 없으면 `/healthz`를 뺀 모든 경로가 503입니다. 코드나 문서에 값을 쓰지 말고 환경 변수나 플랫폼 비밀로만 넘기세요. |
 | `LLM_BACKEND` | `foundry` 또는 `mock`(`foundry`). `mock`은 Azure 없이 정해진 답을 돌려줍니다. |
 | `FOUNDRY_RESOURCE` | Foundry 리소스 **이름**(주소가 아닙니다). `LLM_BACKEND=foundry`일 때 필수입니다. |
-| `FOUNDRY_MODEL` | Foundry의 모델 **배포 이름**(`claude-sonnet-5-5`). 모델 ID가 아니라 배포 이름입니다. |
-| `FOUNDRY_EFFORT` | `low` · `medium` · `high` · `xhigh` · `max`(`max`). |
+| `FOUNDRY_MODEL` | Foundry의 모델 **배포 이름**(`gpt-6.1-sol`). 모델 ID가 아니라 배포 이름입니다. |
+| `FOUNDRY_PROVIDER` | `openai` 또는 `anthropic`. 비우면 배포 이름이 `claude`로 시작할 때만 `anthropic`(Anthropic SDK), 아니면 `openai`(OpenAI 호환 v1 엔드포인트, 표준 라이브러리만 사용)입니다. |
+| `FOUNDRY_EFFORT` | `low` · `medium` · `high` · `xhigh` · `max`(`max`). gpt-6.1-sol에는 `max`가 없어서 `xhigh`로 보내고, `/api/info`도 `xhigh`로 보여 줍니다. |
 | `FOUNDRY_MAX_TOKENS` | 응답의 최대 토큰 수, 256~16000(`4096`). |
-| `ANTHROPIC_FOUNDRY_API_KEY` | 선택. 지정하면 API 키로 인증하고(`/api/info`의 `auth`가 `api-key`), 없으면 Microsoft Entra ID(`DefaultAzureCredential`)를 씁니다(`entra-id`). 이 데모는 키 없는 방식을 권장합니다. |
+| `FOUNDRY_API_KEY` | 선택. 지정하면 API 키로 인증하고(`/api/info`의 `auth`가 `api-key`), 없으면 Microsoft Entra ID(`DefaultAzureCredential`)를 씁니다(`entra-id`). 이 데모는 키 없는 방식을 권장합니다. |
+| `ANTHROPIC_FOUNDRY_API_KEY` | `FOUNDRY_API_KEY`의 이전 이름입니다. 둘 다 있으면 `FOUNDRY_API_KEY`를 씁니다. |
 | `MOCK_LATENCY_MS` | mock 응답 지연, 0~10000(`0`). 배포 스크립트는 스케일 아웃을 보여 주려고 `1000`으로 지정합니다. |
 | `APP_VERSION` | 화면과 `/api/info`에 보이는 앱 버전(`dev`). 컨테이너 이미지는 빌드할 때 `--build-arg APP_VERSION=<태그>`로 넣습니다. |
 | `APP_PLATFORM` | 실행 플랫폼 표시. 지정하지 않으면 Container Apps(`CONTAINER_APP_NAME`)와 AKS(`KUBERNETES_SERVICE_HOST`)를 자동으로 알아냅니다. |
@@ -183,7 +185,7 @@ curl -u "demo:$DEMO_PASSWORD" -H 'Content-Type: application/json' \
 ```text
 app/                  데모 앱: server.py, index.html, Dockerfile, tests/
 infra/
-  foundry/            Foundry 계정, 프로젝트, Claude 배포 (Bicep)
+  foundry/            Foundry 계정, 프로젝트, 모델 배포 (Bicep)
   aca/                Container Apps 환경과 앱, ACR, 관리 ID (Bicep)
   aks/                AKS 클러스터와 ACR (Bicep), k8s/ 매니페스트(Kustomize)
   modules/            공용 Bicep 모듈(Foundry 접근 권한)

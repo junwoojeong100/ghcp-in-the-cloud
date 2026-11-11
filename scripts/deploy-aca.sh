@@ -12,7 +12,7 @@ usage() {
 사용법: scripts/deploy-aca.sh [--yes]
 
 Azure Container Apps 에 데모 앱을 배포합니다. 기본은 mock 백엔드라서 Foundry 없이도 동작합니다.
-Foundry 의 Claude 를 쓰려면 먼저 scripts/deploy-foundry.sh 를 실행하고
+Foundry 의 모델(기본 gpt-6.1-sol)을 쓰려면 먼저 scripts/deploy-foundry.sh 를 실행하고
 `source .azure/foundry.env` 한 뒤 이 스크립트를 실행하세요.
 
 환경 변수 (괄호는 기본값)
@@ -26,9 +26,9 @@ Foundry 의 Claude 를 쓰려면 먼저 scripts/deploy-foundry.sh 를 실행하�
   MOCK_LATENCY_MS        mock 응답 지연, 스케일 아웃을 보여 주려고 기본 1000
   MIN_REPLICAS           최소 복제본 수 (0, 유휴 시 0 으로 줄어듭니다)
   MAX_REPLICAS           최대 복제본 수 (5)
-  FOUNDRY_RESOURCE       지정하면 mock 대신 이 Foundry 리소스의 Claude 를 호출합니다
+  FOUNDRY_RESOURCE       지정하면 mock 대신 이 Foundry 리소스의 모델을 호출합니다
   FOUNDRY_RESOURCE_GROUP Foundry 리소스 그룹 (RESOURCE_GROUP 과 같다고 봅니다)
-  FOUNDRY_MODEL          모델 배포 이름 (claude-sonnet-5-5)
+  FOUNDRY_MODEL          모델 배포 이름 (gpt-6.1-sol)
   FOUNDRY_EFFORT         low | medium | high | xhigh | max (max)
 
 옵션
@@ -63,7 +63,7 @@ MIN_REPLICAS="${MIN_REPLICAS:-0}"
 MAX_REPLICAS="${MAX_REPLICAS:-5}"
 FOUNDRY_RESOURCE="${FOUNDRY_RESOURCE:-}"
 FOUNDRY_RESOURCE_GROUP="${FOUNDRY_RESOURCE_GROUP:-$RESOURCE_GROUP}"
-FOUNDRY_MODEL="${FOUNDRY_MODEL:-claude-sonnet-5-5}"
+FOUNDRY_MODEL="${FOUNDRY_MODEL:-gpt-6.1-sol}"
 FOUNDRY_EFFORT="${FOUNDRY_EFFORT:-max}"
 
 [[ "$NAME_PREFIX" =~ ^[a-z][a-z0-9]{1,11}$ ]] || die "NAME_PREFIX 는 소문자/숫자 2~12자여야 합니다."

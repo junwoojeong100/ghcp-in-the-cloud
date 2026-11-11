@@ -1,7 +1,7 @@
 // AKS demo: registry, cluster with Microsoft Entra ID + Azure RBAC, and a workload identity.
 //
 // Security defaults: no local Kubernetes accounts (Entra ID only), Azure RBAC for
-// Kubernetes authorization, OIDC issuer + Workload Identity so a pod calls Claude on
+// Kubernetes authorization, OIDC issuer + Workload Identity so a pod calls a model on
 // Microsoft Foundry without any key, and a registry without an admin user.
 targetScope = 'resourceGroup'
 
