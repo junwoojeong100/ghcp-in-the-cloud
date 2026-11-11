@@ -1211,7 +1211,7 @@ FIXED = {
         "title": "부록 A. 사전 준비 체크리스트",
         "cols": [
             ("GitHub", "repo", [
-                "연습용 저장소(포크)",
+                "연습용 저장소(포크 또는 템플릿)",
                 "저장소 관리자 권한",
                 "Copilot 라이선스 (cloud agent)",
                 "`gh auth login`",

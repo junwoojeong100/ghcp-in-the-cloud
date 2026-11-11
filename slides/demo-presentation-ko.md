@@ -1113,7 +1113,7 @@ LLM_BACKEND=mock python -m app.server
 ### 화면 구성
 
 - **GitHub**
-  - 연습용 저장소(포크)
+  - 연습용 저장소(포크 또는 템플릿)
   - 저장소 관리자 권한
   - Copilot 라이선스 (cloud agent)
   - `gh auth login`
