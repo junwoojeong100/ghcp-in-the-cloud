@@ -1,0 +1,1235 @@
+1
+00:00:00,804 --> 00:00:05,342
+From GitHub Copilot to Microsoft Foundry, Container Apps and AKS.
+
+2
+00:00:05,342 --> 00:00:09,252
+We ran one issue all the way to production, for real, on
+
+3
+00:00:09,252 --> 00:00:13,092
+GitHub and Azure, and recorded it from start to finish.
+
+4
+00:00:15,171 --> 00:00:18,450
+Here is the whole architecture on one page.
+
+5
+00:00:18,450 --> 00:00:22,035
+A developer creates an issue in the repository.
+
+6
+00:00:22,286 --> 00:00:26,606
+The Copilot cloud agent turns that issue into a pull request.
+
+7
+00:00:26,860 --> 00:00:29,296
+GitHub Actions verifies the code, the
+
+8
+00:00:29,296 --> 00:00:32,260
+container and the infrastructure in parallel.
+
+9
+00:00:32,510 --> 00:00:35,924
+To deploy, it signs in to Microsoft
+
+10
+00:00:35,924 --> 00:00:40,118
+Entra ID with OIDC, with no stored secrets.
+
+11
+00:00:40,369 --> 00:00:43,177
+The image goes to Azure Container Registry,
+
+12
+00:00:43,430 --> 00:00:47,558
+and Container Apps and AKS run the same image.
+
+13
+00:00:47,811 --> 00:00:52,563
+The model is gpt-6.1-sol on Foundry, and the app calls it with
+
+14
+00:00:52,563 --> 00:00:57,315
+a Managed Identity or a Workload Identity, without an API key.
+
+15
+00:00:59,578 --> 00:01:00,346
+Demo one.
+
+16
+00:01:00,346 --> 00:01:01,626
+GitHub Copilot.
+
+17
+00:01:01,626 --> 00:01:07,258
+Hand the issue to an AI teammate, and a human verifies the result.
+
+18
+00:01:09,011 --> 00:01:14,247
+Every file that tells Copilot about the team's rules lives in the repository.
+
+19
+00:01:14,247 --> 00:01:16,967
+First, the repository-wide instructions.
+
+20
+00:01:16,967 --> 00:01:20,843
+They are attached to every Copilot request automatically.
+
+21
+00:01:21,197 --> 00:01:24,806
+Path-specific instructions target files with globs, so
+
+22
+00:01:24,806 --> 00:01:28,349
+Python, Bicep and workflows each get different rules.
+
+23
+00:01:28,903 --> 00:01:33,763
+Slash prompts and dedicated agents live in the same repository.
+
+24
+00:01:33,763 --> 00:01:37,543
+Even a read-only reviewer agent is just one file.
+
+25
+00:01:38,068 --> 00:01:41,985
+The issue form asks for the context, the acceptance criteria and the
+
+26
+00:01:41,985 --> 00:01:45,844
+constraints, so people write issues that an agent can succeed with.
+
+27
+00:01:47,572 --> 00:01:49,652
+Issues are created by a script.
+
+28
+00:01:49,652 --> 00:01:52,135
+Run it as is and it only previews the
+
+29
+00:01:52,135 --> 00:01:55,156
+issues and the commands, and changes nothing.
+
+30
+00:01:55,509 --> 00:01:58,655
+With the apply and assign-copilot options, it
+
+31
+00:01:58,655 --> 00:02:01,941
+creates two issues and assigns them to Copilot.
+
+32
+00:02:02,322 --> 00:02:05,865
+On the issue page, Copilot appears as the assignee, and a
+
+33
+00:02:05,865 --> 00:02:09,906
+moment later the timeline records that the agent started working.
+
+34
+00:02:15,126 --> 00:02:18,756
+The agent opened a draft pull request in about five minutes.
+
+35
+00:02:18,756 --> 00:02:21,116
+It is linked to the issue, and the plan
+
+36
+00:02:21,116 --> 00:02:23,718
+and the implementation are kept as commits.
+
+37
+00:02:24,073 --> 00:02:27,121
+The change is in the UI file and in the tests.
+
+38
+00:02:27,121 --> 00:02:31,561
+The agent did not just implement the feature; it brought tests too.
+
+39
+00:02:32,191 --> 00:02:37,185
+The agent's work is kept in its session, about four and a half minutes of it.
+
+40
+00:02:37,185 --> 00:02:41,207
+You can see the unit tests, a secret scan and the CodeQL scan.
+
+41
+00:02:41,207 --> 00:02:43,672
+It also tried a browser check, and its
+
+42
+00:02:43,672 --> 00:02:46,591
+summary says that one could not be completed.
+
+43
+00:02:47,147 --> 00:02:50,038
+One thing to know: workflows on an agent's pull
+
+44
+00:02:50,038 --> 00:02:52,990
+request do not run until a person approves them.
+
+45
+00:02:52,990 --> 00:02:55,451
+We look at that state in the next scene.
+
+46
+00:02:57,141 --> 00:03:00,292
+In the run list, CI, CodeQL and the dependency
+
+47
+00:03:00,292 --> 00:03:03,717
+check of the agent's pull request are all waiting.
+
+48
+00:03:03,717 --> 00:03:06,525
+They are waiting for a person's approval.
+
+49
+00:03:06,877 --> 00:03:11,351
+On the web, it is one click on Approve and run workflows.
+
+50
+00:03:11,351 --> 00:03:15,589
+Here, we dispatch the same CI directly on this branch.
+
+51
+00:03:16,003 --> 00:03:19,220
+Four jobs run in parallel and all of them pass.
+
+52
+00:03:19,220 --> 00:03:22,026
+Code written by an agent goes through the
+
+53
+00:03:22,026 --> 00:03:24,763
+same checks as code written by a person.
+
+54
+00:03:26,603 --> 00:03:31,246
+Verification is done, so I switch the draft to Ready for review.
+
+55
+00:03:31,246 --> 00:03:33,423
+The agent cannot do this step.
+
+56
+00:03:33,423 --> 00:03:36,107
+Then I ask Copilot for a code review.
+
+57
+00:03:36,460 --> 00:03:37,968
+The review is posted.
+
+58
+00:03:37,968 --> 00:03:42,493
+It recommends approval and found no open issues in this change.
+
+59
+00:03:42,493 --> 00:03:46,156
+But a Copilot review does not count as an approval.
+
+60
+00:03:46,508 --> 00:03:51,009
+A plain merge is blocked, because the ruleset on main prohibits it.
+
+61
+00:03:51,009 --> 00:03:55,913
+This is a one-person repository, so I merge with an administrator bypass.
+
+62
+00:03:55,913 --> 00:04:00,212
+The checks have still run, and the decision stays with a person.
+
+63
+00:04:00,565 --> 00:04:04,521
+The pull request is merged and the linked issue is closed.
+
+64
+00:04:04,521 --> 00:04:07,794
+From issue to pull request, verification, review
+
+65
+00:04:07,794 --> 00:04:11,341
+and merge, a human stayed in control the whole time.
+
+66
+00:04:17,011 --> 00:04:17,721
+Demo two.
+
+67
+00:04:17,721 --> 00:04:19,457
+The GitHub repository.
+
+68
+00:04:19,457 --> 00:04:24,979
+Protection rules and security checks are defined as files and scripts.
+
+69
+00:04:26,145 --> 00:04:29,168
+Repository protection is applied by one script.
+
+70
+00:04:29,168 --> 00:04:34,185
+Run it as is and it changes nothing; it only previews the calls it would make.
+
+71
+00:04:34,539 --> 00:04:37,650
+Add the apply option and it really applies them.
+
+72
+00:04:37,650 --> 00:04:41,734
+Security features, labels, the deployment approval environment,
+
+73
+00:04:41,734 --> 00:04:46,011
+the ruleset and the merge options turn to done, one after another.
+
+74
+00:04:48,517 --> 00:04:52,805
+Checking the applied ruleset through the API: protection on main is
+
+75
+00:04:52,805 --> 00:04:56,837
+active, and it contains deletion blocking, force-push blocking,
+
+76
+00:04:56,837 --> 00:05:01,573
+required pull requests, required checks, code scanning and Copilot review.
+
+77
+00:05:01,925 --> 00:05:04,469
+Settings are code, so you can run the script
+
+78
+00:05:04,469 --> 00:05:07,013
+any number of times and get the same result.
+
+79
+00:05:08,501 --> 00:05:13,049
+A new contributor who opens the repo in Codespaces gets an environment
+
+80
+00:05:13,049 --> 00:05:18,053
+with Python and the Azure CLI, exactly as this dev container file defines it.
+
+81
+00:05:19,472 --> 00:05:22,577
+Let's run the same commands in a terminal.
+
+82
+00:05:22,577 --> 00:05:24,056
+All unit tests pass.
+
+83
+00:05:27,666 --> 00:05:31,181
+Start the app in mock mode and it runs without Azure.
+
+84
+00:05:31,181 --> 00:05:34,232
+healthz is open without credentials, and every
+
+85
+00:05:34,232 --> 00:05:37,482
+other route returns 401 when called without them.
+
+86
+00:05:39,470 --> 00:05:43,058
+Now we open a pull request that is risky on purpose.
+
+87
+00:05:43,058 --> 00:05:46,370
+It contains vulnerable Python code, a vulnerable
+
+88
+00:05:46,370 --> 00:05:49,958
+dependency and a workflow that uses untrusted input.
+
+89
+00:05:54,257 --> 00:05:57,114
+As soon as the pull request opens, CodeQL,
+
+90
+00:05:57,114 --> 00:06:01,128
+dependency review and the Copilot review run automatically.
+
+91
+00:06:01,128 --> 00:06:03,713
+In the checks list, three have failed.
+
+92
+00:06:04,066 --> 00:06:07,385
+CodeQL reports alerts for command injection, path
+
+93
+00:06:07,385 --> 00:06:11,314
+traversal, debug mode, and code injection in the workflow.
+
+94
+00:06:14,007 --> 00:06:16,392
+The GitHub page shows the same state.
+
+95
+00:06:16,392 --> 00:06:19,938
+The merge status panel lists the failed checks and says
+
+96
+00:06:19,938 --> 00:06:23,871
+that the security alerts CodeQL found are blocking the merge.
+
+97
+00:06:26,968 --> 00:06:29,235
+Under Security, code scanning lists the
+
+98
+00:06:29,235 --> 00:06:32,200
+alerts from this pull request, with their severity.
+
+99
+00:06:32,671 --> 00:06:34,824
+We will not merge this pull request.
+
+100
+00:06:34,824 --> 00:06:37,396
+We confirmed that the checks stopped it, as
+
+101
+00:06:37,396 --> 00:06:40,207
+intended, so we close it and delete the branch.
+
+102
+00:06:42,094 --> 00:06:45,274
+Dependency updates are handled by Dependabot.
+
+103
+00:06:45,274 --> 00:06:48,100
+One file tells it to check actions, pip,
+
+104
+00:06:48,100 --> 00:06:50,926
+Docker and the dev container every week.
+
+105
+00:06:52,177 --> 00:06:54,241
+The checks are already running.
+
+106
+00:06:54,241 --> 00:06:58,369
+If nothing is outdated, no pull request is the correct result.
+
+107
+00:07:00,323 --> 00:07:03,448
+Now we check on GitHub what the script applied.
+
+108
+00:07:03,448 --> 00:07:08,435
+The ruleset main-protection is active, and it targets the main branch only.
+
+109
+00:07:08,826 --> 00:07:12,958
+The rule list has deletion blocking, force-push blocking, required
+
+110
+00:07:12,958 --> 00:07:17,466
+pull requests, required status checks, code scanning and Copilot review.
+
+111
+00:07:19,161 --> 00:07:22,357
+The deployment environment azure-demo has a protection
+
+112
+00:07:22,357 --> 00:07:26,145
+rule, so a deployment starts only after a named person approves.
+
+113
+00:07:27,402 --> 00:07:29,274
+Security features are on too.
+
+114
+00:07:29,274 --> 00:07:33,407
+The dependency graph, Dependabot alerts and security updates are
+
+115
+00:07:33,407 --> 00:07:38,250
+enabled, and version updates are handled by the dependabot.yml we just saw.
+
+116
+00:07:40,502 --> 00:07:41,527
+Demo three.
+
+117
+00:07:41,527 --> 00:07:42,925
+GitHub Actions.
+
+118
+00:07:42,925 --> 00:07:48,422
+Parallel verification, and OIDC deployment without secrets.
+
+119
+00:07:49,663 --> 00:07:52,769
+When you open a pull request, CI runs four jobs at
+
+120
+00:07:52,769 --> 00:07:56,000
+once: unit tests, container build with a smoke test,
+
+121
+00:07:56,000 --> 00:07:59,479
+infrastructure validation, and workflow and script lint.
+
+122
+00:08:00,134 --> 00:08:04,970
+Including CodeQL and the dependency check, all eight checks passed.
+
+123
+00:08:04,970 --> 00:08:09,518
+These job names are exactly the required checks in the ruleset.
+
+124
+00:08:09,871 --> 00:08:13,127
+The container smoke test runs fourteen checks, on a
+
+125
+00:08:13,127 --> 00:08:16,447
+read-only file system with every capability dropped.
+
+126
+00:08:18,003 --> 00:08:21,303
+The trust used for deployment is created by one script.
+
+127
+00:08:21,303 --> 00:08:24,363
+The preview only shows the managed identity and the
+
+128
+00:08:24,363 --> 00:08:27,723
+roles it would create, and the variables it would store.
+
+129
+00:08:28,077 --> 00:08:31,203
+With apply, it creates the managed identity and the
+
+130
+00:08:31,203 --> 00:08:35,372
+federated credential, and grants roles only on the target resources.
+
+131
+00:08:35,372 --> 00:08:38,989
+The script asks GitHub for the exact subject format of this
+
+132
+00:08:38,989 --> 00:08:43,341
+repository, because recent repositories put numeric IDs in the subject.
+
+133
+00:08:43,697 --> 00:08:48,482
+There are zero secrets, in the repository and in the environment.
+
+134
+00:08:48,482 --> 00:08:51,353
+The only stored values are identifiers.
+
+135
+00:08:52,141 --> 00:08:57,130
+The trust is narrowed to one environment of this repository, azure-demo, and
+
+136
+00:08:57,130 --> 00:09:02,053
+the roles exist only on the resource group, the registry and the namespace.
+
+137
+00:09:09,990 --> 00:09:11,780
+The GitHub page agrees.
+
+138
+00:09:11,780 --> 00:09:16,372
+There are no environment secrets and no repository secrets.
+
+139
+00:09:16,372 --> 00:09:20,574
+The workflow only uses the token it gets through OIDC.
+
+140
+00:09:22,390 --> 00:09:26,866
+When we run the deploy workflow, it stops at the environment approval.
+
+141
+00:09:26,866 --> 00:09:31,534
+The status is waiting, and until someone approves, nothing touches Azure.
+
+142
+00:09:31,887 --> 00:09:35,851
+After the approval, it signs in to Azure with OIDC and no
+
+143
+00:09:35,851 --> 00:09:40,719
+secrets, builds and pushes the image, and then deploys a new revision.
+
+144
+00:09:59,250 --> 00:10:02,143
+When the deployment finishes, the app's info
+
+145
+00:10:02,143 --> 00:10:05,233
+endpoint returns the version of the new commit.
+
+146
+00:10:05,233 --> 00:10:07,074
+That value is the image tag.
+
+147
+00:10:07,426 --> 00:10:09,772
+We also verify the build provenance.
+
+148
+00:10:09,772 --> 00:10:12,509
+It checks the signed attestation that this
+
+149
+00:10:12,509 --> 00:10:15,898
+image was built by this workflow in this repository.
+
+150
+00:10:24,086 --> 00:10:27,036
+In the Azure portal, here is the federated
+
+151
+00:10:27,036 --> 00:10:30,828
+credential of the managed identity for GitHub Actions.
+
+152
+00:10:30,828 --> 00:10:35,462
+There is one credential, and its issuer is GitHub's token service.
+
+153
+00:10:41,539 --> 00:10:45,358
+Open it and the organization and the repository carry numeric
+
+154
+00:10:45,358 --> 00:10:49,490
+IDs, and the trusted subject is the single environment azure-demo.
+
+155
+00:10:49,490 --> 00:10:51,932
+The portal recommends this immutable ID
+
+156
+00:10:51,932 --> 00:10:54,811
+format, and the script uses it from the start.
+
+157
+00:11:01,233 --> 00:11:05,051
+The roles given to this managed identity exist only on the
+
+158
+00:11:05,051 --> 00:11:08,935
+target resources: Contributor on the container app resource
+
+159
+00:11:08,935 --> 00:11:12,753
+group, AcrPush on the registry, and the AKS cluster roles.
+
+160
+00:11:14,940 --> 00:11:15,838
+Demo four.
+
+161
+00:11:15,838 --> 00:11:17,454
+Microsoft Foundry.
+
+162
+00:11:17,454 --> 00:11:21,852
+The same code calls the model without an API key.
+
+163
+00:11:23,035 --> 00:11:26,471
+For this demo we chose gpt-6.1-sol as the model.
+
+164
+00:11:26,471 --> 00:11:30,766
+One script creates the Foundry resource and the project, and
+
+165
+00:11:30,766 --> 00:11:35,419
+deploys the model, so we simply run it with its default settings.
+
+166
+00:11:35,771 --> 00:11:39,971
+The Foundry resource and the model are deployed in under two minutes.
+
+167
+00:11:40,323 --> 00:11:43,986
+The deployment list shows gpt-6.1-sol, and the
+
+168
+00:11:43,986 --> 00:11:49,003
+connection file has only a resource name and a deployment name.
+
+169
+00:11:49,003 --> 00:11:50,595
+There is no API key.
+
+170
+00:11:54,902 --> 00:11:56,303
+We run the app locally.
+
+171
+00:11:56,303 --> 00:11:59,592
+There is no key in the code; it calls Foundry with the
+
+172
+00:11:59,592 --> 00:12:02,942
+token of the account I signed in with through az login.
+
+173
+00:12:04,046 --> 00:12:08,545
+Ask a question in the browser and gpt-6.1-sol answers.
+
+174
+00:12:08,545 --> 00:12:12,878
+Effort is high, so it takes a while to think deeply.
+
+175
+00:12:21,509 --> 00:12:24,642
+Below the answer you see the instance and version that
+
+176
+00:12:24,642 --> 00:12:28,762
+responded, and the exchange is recorded in the recent conversation too.
+
+177
+00:12:28,762 --> 00:12:31,373
+The Copilot agent built that feature earlier.
+
+178
+00:12:32,839 --> 00:12:36,590
+The info endpoint reports backend foundry,
+
+179
+00:12:36,590 --> 00:12:41,055
+model gpt-6.1-sol, auth entra-id and effort xhigh.
+
+180
+00:12:41,055 --> 00:12:46,591
+GPT has no max level, so the app sends the highest one, xhigh.
+
+181
+00:12:46,944 --> 00:12:49,548
+We sent the same question to a server
+
+182
+00:12:49,548 --> 00:12:53,066
+started with effort low and to the default server.
+
+183
+00:12:53,066 --> 00:12:58,273
+In this recording, low took about eight seconds and xhigh about seventeen.
+
+184
+00:12:58,273 --> 00:13:02,424
+The code is the same; only an environment variable differs.
+
+185
+00:13:09,382 --> 00:13:12,942
+This is the Foundry resource in the Azure portal.
+
+186
+00:13:12,942 --> 00:13:17,374
+Its kind is AIServices, and it was created in Sweden Central.
+
+187
+00:13:23,551 --> 00:13:27,652
+The roles of the Container Apps app's managed identity are just
+
+188
+00:13:27,652 --> 00:13:32,731
+Cognitive Services User on the Foundry account and AcrPull for pulling images.
+
+189
+00:13:32,731 --> 00:13:36,247
+This role, not an API key, is what allows model calls.
+
+190
+00:13:37,944 --> 00:13:41,203
+This is the project home in the Foundry portal.
+
+191
+00:13:41,203 --> 00:13:46,056
+The app calls the model only with an Entra ID token, never with a key.
+
+192
+00:13:51,014 --> 00:13:54,440
+The models page has the deployment gpt-6.1-sol.
+
+193
+00:13:54,440 --> 00:13:58,959
+It is a Global Standard deployment and its state is succeeded.
+
+194
+00:13:58,959 --> 00:14:01,656
+The name that the app's FOUNDRY_MODEL
+
+195
+00:14:01,656 --> 00:14:04,718
+points to is exactly this deployment name.
+
+196
+00:14:06,969 --> 00:14:07,851
+Demo five.
+
+197
+00:14:07,851 --> 00:14:09,704
+Azure Container Apps.
+
+198
+00:14:09,704 --> 00:14:13,497
+Scale-to-zero and revision canary releases.
+
+199
+00:14:14,682 --> 00:14:17,255
+Deploying to Container Apps is one script.
+
+200
+00:14:17,255 --> 00:14:20,379
+It creates the registry and the environment, builds
+
+201
+00:14:20,379 --> 00:14:23,380
+the image in the registry, deploys the app, waits
+
+202
+00:14:23,380 --> 00:14:26,994
+until it responds, and then shows the address and the info.
+
+203
+00:14:31,737 --> 00:14:36,669
+We sent no request after the deployment, so there are zero replicas.
+
+204
+00:14:36,669 --> 00:14:38,265
+No compute is running.
+
+205
+00:14:45,316 --> 00:14:47,265
+The first request took twenty-six
+
+206
+00:14:47,265 --> 00:14:49,924
+seconds, because a replica had to be started.
+
+207
+00:14:50,850 --> 00:14:57,042
+The second request finished in 0.03 seconds, and the replica count is now one.
+
+208
+00:15:10,565 --> 00:15:13,472
+The same smoke test passes all fourteen
+
+209
+00:15:13,472 --> 00:15:16,901
+checks against the deployed HTTPS address too.
+
+210
+00:15:18,375 --> 00:15:20,425
+New versions ship as revisions.
+
+211
+00:15:20,425 --> 00:15:24,325
+Status shows the current split, and deploy v2 creates a new
+
+212
+00:15:24,325 --> 00:15:28,887
+revision with zero percent of the traffic, so users are not affected.
+
+213
+00:15:34,741 --> 00:15:38,922
+Canary 10 sends only ten percent of the traffic to the new version.
+
+214
+00:15:38,922 --> 00:15:42,229
+We look at this state in a browser in the next scene.
+
+215
+00:15:42,582 --> 00:15:46,669
+If all is well, promote switches to one hundred percent.
+
+216
+00:15:46,669 --> 00:15:49,734
+Thirty probe calls are all answered by v2.
+
+217
+00:15:53,057 --> 00:15:55,107
+If there is a problem, roll back.
+
+218
+00:15:55,107 --> 00:15:58,647
+It is not a redeploy; only the traffic weights change, so
+
+219
+00:15:58,647 --> 00:16:02,249
+the previous revision gets one hundred percent right away.
+
+220
+00:16:05,339 --> 00:16:09,416
+Here is the app in a browser while the canary is at ten percent.
+
+221
+00:16:09,416 --> 00:16:12,475
+The chips at the top show the platform, aca, the
+
+222
+00:16:12,475 --> 00:16:16,043
+replica that answered, the revision and the app version.
+
+223
+00:16:16,504 --> 00:16:20,152
+Show traffic distribution sends twenty requests and draws
+
+224
+00:16:20,152 --> 00:16:24,184
+the answers per revision, per instance and per version as bars.
+
+225
+00:16:24,184 --> 00:16:28,216
+The new version is receiving only a small share of the traffic.
+
+226
+00:16:33,172 --> 00:16:37,147
+The top terminal watches the replica count every four seconds, and the
+
+227
+00:16:37,147 --> 00:16:41,236
+bottom one applies load for two minutes with twenty concurrent requests.
+
+228
+00:16:45,851 --> 00:16:50,035
+The mock answer takes about a second, so requests pile up.
+
+229
+00:16:50,035 --> 00:16:53,282
+When the concurrency passes five per replica,
+
+230
+00:16:53,282 --> 00:16:57,683
+replicas are added: one, three, and then the maximum of five.
+
+231
+00:17:17,554 --> 00:17:21,044
+At the end, about nineteen hundred requests all
+
+232
+00:17:21,044 --> 00:17:24,981
+returned HTTP 200, with a median of about one second.
+
+233
+00:17:24,981 --> 00:17:30,106
+Once the load is gone, the replicas shrink again after a few minutes.
+
+234
+00:17:31,678 --> 00:17:34,288
+The Azure portal shows the same result.
+
+235
+00:17:34,288 --> 00:17:38,571
+The resource group holds the container app, the app environment,
+
+236
+00:17:38,571 --> 00:17:43,054
+the registry, the managed identities and a Log Analytics workspace.
+
+237
+00:17:47,481 --> 00:17:49,141
+This is the revisions page.
+
+238
+00:17:49,141 --> 00:17:52,830
+There is one active revision with one hundred percent of the
+
+239
+00:17:52,830 --> 00:17:57,010
+traffic, and it has zero replicas now because there are no requests.
+
+240
+00:17:57,010 --> 00:18:00,207
+The Inactive tab keeps the earlier revisions, so you
+
+241
+00:18:00,207 --> 00:18:03,465
+can bring one back with zero percent traffic anytime.
+
+242
+00:18:08,315 --> 00:18:11,288
+The Scale page has a minimum of zero and a
+
+243
+00:18:11,288 --> 00:18:14,332
+maximum of five replicas with an HTTP rule.
+
+244
+00:18:14,332 --> 00:18:18,083
+Scale-to-zero and scale-out are exactly this setting.
+
+245
+00:18:20,337 --> 00:18:21,255
+Demo six.
+
+246
+00:18:21,255 --> 00:18:22,071
+AKS.
+
+247
+00:18:22,071 --> 00:18:27,273
+Rolling updates, autoscaling and Workload Identity.
+
+248
+00:18:28,436 --> 00:18:31,621
+An AKS deployment takes five to ten minutes.
+
+249
+00:18:31,621 --> 00:18:35,459
+It creates the cluster, the registry and the Workload
+
+250
+00:18:35,459 --> 00:18:39,296
+Identity, pushes the image and applies the manifests.
+
+251
+00:18:39,296 --> 00:18:41,324
+The waiting part is sped up.
+
+252
+00:18:47,073 --> 00:18:49,652
+On one node you see the deployment, the
+
+253
+00:18:49,652 --> 00:18:52,761
+HPA, the PDB, the service and the pods at once.
+
+254
+00:18:55,708 --> 00:18:58,097
+Connect with port forwarding and run the
+
+255
+00:18:58,097 --> 00:19:00,844
+smoke test, and the same fourteen checks pass.
+
+256
+00:19:08,401 --> 00:19:11,461
+The top pane watches the HPA and the pods.
+
+257
+00:19:11,461 --> 00:19:14,449
+The kubectl watch option accepts only one
+
+258
+00:19:14,449 --> 00:19:18,529
+resource type, so we used the watch command to see both.
+
+259
+00:19:18,885 --> 00:19:22,140
+Start the load generator in the bottom pane, and CPU
+
+260
+00:19:22,140 --> 00:19:26,397
+utilization passes the target, so the pods grow from two up to five.
+
+261
+00:19:32,403 --> 00:19:37,275
+Turn the load off and, after the stabilization window, the pods shrink again.
+
+262
+00:19:50,592 --> 00:19:53,090
+The v2 image was pushed beforehand.
+
+263
+00:19:53,090 --> 00:19:57,301
+When we change the image to v2, a new pod is created first,
+
+264
+00:19:57,301 --> 00:20:01,512
+and the old pod is removed only after the new one is ready.
+
+265
+00:20:07,279 --> 00:20:11,191
+The rollout succeeds, and the history keeps the revisions.
+
+266
+00:20:18,199 --> 00:20:22,879
+If something is wrong, a single rollout undo brings the old version back.
+
+267
+00:20:39,802 --> 00:20:42,084
+The service account's annotation points
+
+268
+00:20:42,084 --> 00:20:44,482
+to the client ID of the managed identity.
+
+269
+00:20:47,886 --> 00:20:51,884
+Only four values are injected into the pod: the client
+
+270
+00:20:51,884 --> 00:20:56,104
+ID, the tenant ID, the token file and the authority host.
+
+271
+00:20:56,104 --> 00:20:57,510
+There is no secret.
+
+272
+00:20:58,257 --> 00:21:00,889
+If we try to create a privileged pod, the
+
+273
+00:21:00,889 --> 00:21:03,585
+Pod Security restricted policy rejects it.
+
+274
+00:21:05,182 --> 00:21:07,944
+This is the overview of the AKS cluster.
+
+275
+00:21:07,944 --> 00:21:11,743
+It is running, the networking is Azure CNI Overlay, and
+
+276
+00:21:11,743 --> 00:21:15,886
+the container registry that supplies the images is attached.
+
+277
+00:21:26,868 --> 00:21:30,403
+The node pool autoscales, and its nodes are ready.
+
+278
+00:21:30,403 --> 00:21:33,444
+When pods increase, nodes can increase too.
+
+279
+00:21:36,933 --> 00:21:42,673
+In the security configuration, the OIDC issuer and Workload Identity are on.
+
+280
+00:21:42,673 --> 00:21:47,205
+That is why a pod can get an Entra ID token without secrets.
+
+281
+00:21:50,556 --> 00:21:54,244
+This is the workloads page of the Kubernetes resources.
+
+282
+00:21:54,244 --> 00:21:57,597
+Both pods of the cloud-copilot-demo deployment are
+
+283
+00:21:57,597 --> 00:22:01,151
+ready, and the load generator is scaled down to zero.
+
+284
+00:22:01,151 --> 00:22:03,900
+It is the same state we saw with kubectl.
+
+285
+00:22:06,209 --> 00:22:08,421
+Last, the Foundry connection.
+
+286
+00:22:08,421 --> 00:22:13,913
+The apps on Container Apps and AKS call the same model, with no secrets.
+
+287
+00:22:15,068 --> 00:22:18,927
+Load the Foundry environment file and run the same deploy script
+
+288
+00:22:18,927 --> 00:22:22,725
+again, and the app calls the Foundry model instead of the mock.
+
+289
+00:22:22,725 --> 00:22:25,076
+The image is rebuilt with the new code.
+
+290
+00:22:32,754 --> 00:22:35,308
+This is the Container Apps page.
+
+291
+00:22:35,308 --> 00:22:41,293
+The backend is foundry, the model is gpt-6.1-sol, and the auth is entra-id.
+
+292
+00:22:41,293 --> 00:22:46,002
+The app's Managed Identity makes the call without a secret.
+
+293
+00:22:54,114 --> 00:22:55,647
+AKS works the same way.
+
+294
+00:22:55,647 --> 00:22:58,978
+Pushing again with the same tag would not make the
+
+295
+00:22:58,978 --> 00:23:02,442
+nodes pull the image, so we deployed with a new tag.
+
+296
+00:23:17,294 --> 00:23:20,486
+The pod calls with its Workload Identity, and
+
+297
+00:23:20,486 --> 00:23:24,032
+the page shows platform aks and model gpt-6.1-sol.
+
+298
+00:23:24,032 --> 00:23:26,940
+Between the same image and the same code,
+
+299
+00:23:26,940 --> 00:23:29,918
+the only difference is who it signs in as.
+
+300
+00:23:38,635 --> 00:23:41,364
+To wrap up: from issue to pull request,
+
+301
+00:23:41,364 --> 00:23:44,724
+verification, review and merge, a human stays in
+
+302
+00:23:44,724 --> 00:23:49,483
+control, and settings and security are defined as files and scripts.
+
+303
+00:23:49,835 --> 00:23:53,756
+We deployed with OIDC and no stored secrets, and called
+
+304
+00:23:53,756 --> 00:23:57,892
+the model with a Managed Identity and a Workload Identity.
+
+305
+00:23:57,892 --> 00:23:59,675
+There is no key anywhere.
+
+306
+00:24:00,026 --> 00:24:02,864
+Running it also taught us a few things.
+
+307
+00:24:02,864 --> 00:24:08,322
+An agent's pull request needs a person's approval before its workflows run.
+
+308
+00:24:08,322 --> 00:24:12,469
+The OIDC subject in new repositories carries numeric IDs.
+
+309
+00:24:12,469 --> 00:24:15,890
+And kubectl watch takes only one resource type.
