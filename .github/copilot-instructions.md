@@ -3,7 +3,7 @@
 ## What this repo is
 - A demo kit for Korean developers: one tiny app (Python 3.12 stdlib `http.server` + one HTML page; answers come from gpt-6.1-sol on Microsoft Foundry) plus the GitHub and Azure setup around it.
 - Six independent demos in `demos/`: `01-github-copilot`, `02-github-repo`, `03-github-actions`, `04-microsoft-foundry`, `05-azure-container-apps`, `06-aks`.
-- Layout: `app/` (server, UI, Dockerfile, `tests/`), `infra/foundry/`, `infra/aca/` and `infra/aks/` (Bicep; Kubernetes manifests in `infra/aks/k8s/`), `scripts/` (bash), `.github/` (workflows, instructions, prompts, agents), `demos/`, `slides/`, `docs/` (GitHub Pages landing page for the recorded-demo slides; the PPTX files are release assets).
+- Layout: `app/` (server, UI, Dockerfile, `tests/`), `infra/foundry/`, `infra/aca/` and `infra/aks/` (Bicep; Kubernetes manifests in `infra/aks/k8s/`), `scripts/` (bash), `.github/` (workflows, instructions, prompts, agents), `demos/`, `slides/`, `docs/` (GitHub Pages pages for the recorded demo, Korean and English; the PPTX and MP4 files are release assets), `en/` (English edition of the guides, presentation slides and slide generator).
 
 ## Commands (trust these first; search only if one fails)
 - Test: `python -m unittest discover -s app/tests -v`
@@ -29,12 +29,12 @@
 - Actions: least-privilege `permissions`, OIDC instead of stored Azure secrets, pinned actions, no untrusted input inside `run:` scripts.
 
 ## Docs and language
-- Docs, slides and speaker notes are Korean. Identifiers, commands, file names and code comments stay English.
+- Docs, slides and speaker notes are Korean. The English edition under `en/` is their translation; Korean stays the source of truth, so change both in the same PR (see `.github/instructions/docs-en.instructions.md`). Identifiers, commands, file names and code comments stay English.
 - Use these terms consistently: 리비전, 워크로드 ID(Workload Identity), 관리 ID(Managed Identity), 스케일 투 제로(scale-to-zero).
 - Do not invent benchmarks, prices or SLAs. No placeholder text, fake URLs or secret-looking strings.
 
 ## Pull requests
-- Keep PRs small and focused. Add or update tests with every behavior change, and update `README.md`, `demos/` and slides when behavior, env vars or commands change.
+- Keep PRs small and focused. Add or update tests with every behavior change, and update `README.md`, `demos/` and slides (and their English twins under `en/`) when behavior, env vars or commands change.
 - Fill in the PR template. The `CI` workflow must be green. A human reviews and merges; never self-approve.
 
 ## Demo guardrails
