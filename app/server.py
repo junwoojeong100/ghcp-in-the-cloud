@@ -232,6 +232,14 @@ def claude_answer(resource, model, effort, max_tokens, message):
     return text or no_text_answer(response.stop_reason)
 
 
+def upstream_message(exc):
+    """The service's own error text (never the prompt), shortened for the log."""
+    try:
+        return str(json.load(exc)["error"]["message"])[:200]
+    except (ValueError, KeyError, TypeError, OSError):
+        return exc.reason or "error"
+
+
 def openai_answer(resource, model, effort, max_tokens, message):
     """GPT deployments use Foundry's OpenAI-compatible v1 endpoint; stdlib only, keyless with Entra ID."""
     api_key = foundry_api_key()
@@ -256,7 +264,7 @@ def openai_answer(resource, model, effort, max_tokens, message):
         with urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
             payload = json.load(response)
     except HTTPError as exc:
-        raise HTTP_ERRORS.get(exc.code, FoundryHTTPError)(f"HTTP {exc.code}") from None
+        raise HTTP_ERRORS.get(exc.code, FoundryHTTPError)(f"HTTP {exc.code}: {upstream_message(exc)}") from None
     choice = (payload.get("choices") or [{}])[0]
     text = ((choice.get("message") or {}).get("content") or "").strip()
     return text or no_text_answer(choice.get("finish_reason"))

@@ -437,6 +437,20 @@ class FoundryOpenAIBackendTests(ServerTestCase):
                 self.assertEqual(reply.status, 502)
                 self.assertIn(expected, reply.json()["hint"])
 
+    def test_the_upstream_error_text_is_logged_but_not_returned(self):
+        message = "The API deployment for this resource does not exist."
+        body = io.BytesIO(json.dumps({"error": {"message": message}}).encode())
+        self.urlopen.side_effect = HTTPError("https://demo", 404, "Not Found", {}, body)
+        with self.assertLogs("cloud-copilot-demo", level="WARNING") as logs:
+            reply = self.chat()
+        self.assertIn(message, "\n".join(logs.output))
+        self.assertNotIn("does not exist", json.dumps(reply.json(), ensure_ascii=False))
+
+        self.urlopen.side_effect = HTTPError("https://demo", 502, "Bad Gateway", {}, io.BytesIO(b"<html>"))
+        with self.assertLogs("cloud-copilot-demo", level="WARNING") as logs:
+            self.chat()
+        self.assertIn("HTTP 502: Bad Gateway", "\n".join(logs.output))
+
     def test_empty_answer_explains_the_finish_reason(self):
         self.urlopen.return_value.__enter__.side_effect = lambda: openai_response("", "length")
         answer = self.chat().json()["answer"]
