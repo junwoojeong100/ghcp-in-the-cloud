@@ -229,7 +229,6 @@ git fetch --prune origin                        # 사라진 원격 브랜치 기
 | `make-risky-pr.sh --apply`가 경고를 출력하고 멈춤 | 작업 트리가 깨끗하지 않거나, HEAD가 origin의 기본 브랜치보다 앞서 있거나, 같은 이름의 브랜치나 대상 파일이 이미 있거나, `gh` 로그인이 안 된 경우입니다. 이때는 아무것도 바꾸지 않으니 메시지대로 정리하고 다시 실행하세요. origin 브랜치 기록이 남아 있다는 경고는 `git fetch --prune origin`으로 지웁니다. 브랜치를 만든 뒤에 멈추면 되돌리는 명령이 출력됩니다. |
 | CodeQL 알림이 없거나 규칙 ID가 다름 | `Analyze (python)`, `Analyze (actions)`가 아직 끝나지 않았거나, CodeQL 쿼리 버전에 따라 탐지 결과가 달라졌을 수 있습니다. 발표 전에 한 번 돌려 결과를 확인하세요. |
 | Copilot 리뷰가 달리지 않음 | PR을 연 사람의 Copilot 라이선스와 정책을 확인하세요. 룰셋의 자동 리뷰는 초안 PR에는 요청되지 않으므로 Ready for review로 바꾸거나 **Reviewers**에서 Copilot을 직접 요청합니다. 지적할 내용이 없으면 코멘트 없이 끝나기도 합니다. |
-| Dependabot이 `/slides` 항목에서 오류를 보고함 | `slides/requirements.txt`가 없는 경우입니다. 파일을 추가하거나 `.github/dependabot.yml`에서 해당 항목을 지웁니다. |
 | 8080 포트가 열리지 않음 | 앱이 실행 중인지 확인하고 PORTS 탭에서 8080을 직접 추가하세요. 앱이 `503`을 돌려주면 `DEMO_PASSWORD`가 설정되지 않은 것입니다. |
 | 스크립트가 `jq`를 찾지 못함 | `apply-repo-settings.sh`는 dry-run에서도 `jq`를 씁니다. Codespace에는 들어 있고, 로컬에서는 패키지 관리자로 설치하세요. |
 
