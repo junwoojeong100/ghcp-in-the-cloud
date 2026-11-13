@@ -3,7 +3,7 @@
 ## What this repo is
 - A demo kit for Korean developers: one tiny app (Python 3.12 stdlib `http.server` + one HTML page; answers come from gpt-6.1-sol on Microsoft Foundry) plus the GitHub and Azure setup around it.
 - Six independent demos in `demos/`: `01-github-copilot`, `02-github-repo`, `03-github-actions`, `04-microsoft-foundry`, `05-azure-container-apps`, `06-aks`.
-- Layout: `app/` (server, UI, Dockerfile, `tests/`), `infra/foundry/`, `infra/aca/` and `infra/aks/` (Bicep; Kubernetes manifests in `infra/aks/k8s/`), `scripts/` (bash), `.github/` (workflows, instructions, prompts, agents), `demos/`, `slides/`, `docs/` (GitHub Pages pages for the recorded demo, Korean and English; the PPTX and MP4 files are release assets), `en/` (English edition of the guides, presentation slides and slide generator).
+- Layout: `app/` (server, UI, Dockerfile, `tests/`), `infra/foundry/`, `infra/aca/` and `infra/aks/` (Bicep; Kubernetes manifests in `infra/aks/k8s/`), `scripts/` (bash), `.github/` (workflows, instructions, prompts, agents), `demos/`, `slides/` (Korean 45-slide recorded-demo PPTX and presentation guides), `docs/` (GitHub Pages pages for the recorded demo, Korean and English; PPTX files are copied from the repository, the full MP4 is a release asset), `en/` (English guides and 45-slide recorded-demo PPTX).
 
 ## Commands (trust these first; search only if one fails)
 - Test: `python -m unittest discover -s app/tests -v`

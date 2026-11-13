@@ -1,14 +1,15 @@
 name: Pages
 
 # Publishes the recorded-demo slides and the English demo video at https://junwoojeong100.github.io/ghcp-in-the-cloud/.
-# The PPTX and MP4 files are assets of the `recorded-demo-slides` release, not files in git, so clones and
-# copies made from this template stay small. To change one, replace the asset with
-# `gh release upload recorded-demo-slides <file> --clobber` and run this workflow again.
+# The PPTX files come from the repository; only the full MP4 is downloaded from the
+# `recorded-demo-slides` release. Changes to either deck on main publish automatically.
 on:
   push:
     branches: [main]
     paths:
       - docs/**
+      - slides/GHCP_in_the_Cloud_Demo_KO.pptx
+      - en/slides/GHCP_in_the_Cloud_Demo_EN.pptx
       - .github/workflows/pages.yml
   workflow_dispatch:
 
@@ -30,7 +31,7 @@ defaults:
 jobs:
   publish:
     name: Publish slides
-    # Copies made from this template have no release assets and no Pages site, so they skip it.
+    # Copies made from this template do not own this Pages site, so they skip it.
     if: github.repository == 'junwoojeong100/ghcp-in-the-cloud'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -47,13 +48,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Collect the pages and the release files
+      - name: Collect the pages and the recorded-demo files
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir _site
           cp -R docs/. _site/
-          gh release download "$SLIDES_RELEASE" --repo "$GITHUB_REPOSITORY" --pattern '*.pptx' --pattern '*.mp4' --dir _site
+          cp slides/GHCP_in_the_Cloud_Demo_KO.pptx en/slides/GHCP_in_the_Cloud_Demo_EN.pptx _site/
+          gh release download "$SLIDES_RELEASE" --repo "$GITHUB_REPOSITORY" --pattern '*.mp4' --dir _site
           ls -lR _site
 
       - name: Upload the site

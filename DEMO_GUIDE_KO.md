@@ -14,7 +14,7 @@
 | Lite | 약 15분 | Demo 1 → 3 → 4 → 5 (단계를 줄여서) | 짧은 발표 슬롯 |
 | 단일 | 6~8분 | 데모 하나 | 특정 서비스 중심의 밋업 |
 
-슬라이드는 데모마다 가치, 시연 흐름, 영상, 핵심 코드 네 장으로 되어 있습니다. 요약 코스에서는 시연 흐름 슬라이드에서 `Lite`로 표시된 단계만 진행합니다. 슬라이드 번호와 시간표, 슬라이드별 진행 대본은 [`slides/demo-presentation-ko.md`](slides/demo-presentation-ko.md)에 있습니다.
+발표 자료는 데모 영상 32편이 들어 있는 [45장 녹화 덱](slides/README.md)입니다. 필요한 슬라이드에서 영상을 재생하거나 아래 순서대로 직접 시연하세요. Full·Lite 코스의 순서와 예상 시간은 이 문서 기준이며, 녹화 영상의 재생 시간과는 별개입니다.
 
 데모 순서는 개발(Copilot) → 협업과 보안(Repo) → 자동화(Actions) → AI 모델(Foundry) → 실행 환경(Container Apps) → 확장과 운영(AKS)으로, 앱이 만들어져 운영되기까지의 흐름을 따릅니다. 어느 데모든 단독으로 시연할 수 있으니 청중에 맞게 골라 쓰세요. 필요한 계정과 구독은 [README의 독립 실행 매트릭스](README.md#독립-실행-매트릭스)에 있습니다.
 
@@ -84,7 +84,7 @@ scripts/setup-github-oidc.sh --apply   # Demo 3, 배포 대상이 먼저 있어�
 
 ### 시연 직전 5분
 
-- [ ] `slides/demo-presentation-ko.pptx`를 열어 두고 발표자 노트를 확인합니다. 시연 큐는 노트와 `slides/demo-presentation-ko.md`에 같은 내용이 있습니다.
+- [ ] 저장소의 [45장 국문 녹화 덱](slides/GHCP_in_the_Cloud_Demo_KO.pptx), `slides/GHCP_in_the_Cloud_Demo_KO.pptx`를 엽니다. 필요한 슬라이드와 영상의 화면·소리·재생을 확인합니다.
 - [ ] 터미널 글꼴을 키우고, 시연에 쓸 탭을 미리 열어 둡니다. 알림을 끕니다.
 - [ ] `DEMO_PASSWORD`는 `export`만 하고 화면에 출력하지 않습니다. 비밀번호가 보이는 창은 공유하지 마세요.
 - [ ] 브라우저에서 GitHub, Azure 포털에 로그인한 상태로 필요한 탭만 남깁니다.

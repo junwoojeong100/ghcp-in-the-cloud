@@ -14,7 +14,7 @@ A guide for presenters who show the demos while moving through the presentation 
 | Lite | About 15 minutes | Demo 1 → 3 → 4 → 5 (with fewer steps) | Short talk slots |
 | Single | 6–8 minutes | One demo | Meetups focused on a specific service |
 
-Each demo has four slides: value, demo flow, video and key code. In the Lite course, run only the steps marked `Lite` on the demo flow slide. The slide numbers, the timetable and the per-slide script are in [`slides/demo-presentation-en.md`](slides/demo-presentation-en.md).
+The presentation is the [45-slide recorded-demo deck](slides/README.md) with 32 embedded videos. Play a video on the relevant slide or run the demos yourself in the order below. The Full and Lite courses follow the order and estimated times in this guide, independently of the recorded videos' playback time.
 
 The demo order follows the path of an app from being built to being operated: development (Copilot) → collaboration and security (Repo) → automation (Actions) → AI model (Foundry) → runtime (Container Apps) → scale and operations (AKS). You can show any demo on its own, so pick the ones that suit your audience. The accounts and subscriptions you need are in [the standalone matrix in the README](README.md#standalone-matrix).
 
@@ -84,7 +84,7 @@ These are the things to do ahead of time for each demo.
 
 ### The last 5 minutes before the demo
 
-- [ ] Open `en/slides/demo-presentation-en.pptx` and check the speaker notes. The demo cues are the same in the notes and in `en/slides/demo-presentation-en.md`.
+- [ ] Open the repository's [45-slide English recorded-demo deck](slides/GHCP_in_the_Cloud_Demo_EN.pptx), `en/slides/GHCP_in_the_Cloud_Demo_EN.pptx`. Check the slides you need and each video's picture, sound and playback.
 - [ ] Increase the terminal font size and open the tabs you will use for the demo in advance. Turn off notifications.
 - [ ] Only `export` `DEMO_PASSWORD` and do not print it on screen. Do not share a window that shows the password.
 - [ ] In the browser, stay signed in to GitHub and the Azure portal, and keep only the tabs you need.

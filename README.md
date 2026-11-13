@@ -193,9 +193,9 @@ infra/
   modules/            공용 Bicep 모듈(Foundry 접근 권한)
 scripts/              배포, 카나리, 부하, 스모크 테스트, 정리 스크립트(bash)
 demos/                01~06 데모별 시연 문서와 보조 파일
-slides/               발표 슬라이드(PPTX), 슬라이드별 진행 대본(Markdown), 생성 스크립트
-docs/                 녹화 데모 슬라이드와 영문 영상을 게시하는 GitHub Pages 페이지(국문·영문, PPTX와 MP4는 릴리스 파일)
-en/                   영문판: 가이드, 발표 슬라이드(PPTX, 대본, 생성 스크립트)
+slides/               국문 45장 녹화 덱(PPTX), 발표·영상 가이드
+docs/                 GitHub Pages 페이지(국문·영문, PPTX는 저장소에서 복사하고 전체 MP4는 릴리스에서 받음)
+en/                   영문판: 시연 가이드와 45장 녹화 덱(PPTX)
 .github/
   workflows/          ci, codeql, dependency-review, deploy-aca, deploy-aks, copilot-setup-steps, pages
   copilot-instructions.md, instructions/, prompts/, agents/    Copilot 설정(Demo 1)
@@ -215,9 +215,8 @@ en/                   영문판: 가이드, 발표 슬라이드(PPTX, 대본, �
 ## 발표 자료와 가이드
 
 - [DEMO_GUIDE_KO.md](DEMO_GUIDE_KO.md): 전체 코스(약 42분)와 요약 코스(약 15분), 시연 전 체크리스트, 시간표
-- [slides/](slides/): 발표 슬라이드(`demo-presentation-ko.pptx`, 모든 슬라이드에 발표자 노트 포함)와 슬라이드별 진행 대본(`demo-presentation-ko.md`). 데모마다 가치, 시연 흐름, 영상, 핵심 코드 네 장으로 구성했습니다. 두 파일은 `slides/build_deck.py`가 같은 데이터로 만들며, 고칠 때는 스크립트를 수정한 뒤 `pip install -r slides/requirements.txt`와 `python slides/build_deck.py`를 실행합니다. 데모 앱과는 별개인 도구이므로 데모를 실행하는 데는 필요 없습니다.
 - [demos/](demos/): 데모별 시연 문서
-- 녹화 데모 슬라이드(웹에서 보기): [국문](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_KO.pptx) 또는 [영문](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_EN.pptx). 데모 영상 32편이 들어 있는 슬라이드 45장이고 Office 웹 뷰어에서 바로 열립니다. 영상은 슬라이드의 ▶를 눌러 재생합니다. [국문 PPTX](https://junwoojeong100.github.io/ghcp-in-the-cloud/GHCP_in_the_Cloud_Demo_KO.pptx)와 [영문 PPTX](https://junwoojeong100.github.io/ghcp-in-the-cloud/GHCP_in_the_Cloud_Demo_EN.pptx)는 내려받을 수도 있습니다. 파일은 릴리스 [`recorded-demo-slides`](https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/tag/recorded-demo-slides)에 있고 `Pages` 워크플로가 GitHub Pages로 게시합니다. 덱을 바꾸면 릴리스 파일을 교체한 뒤 이 워크플로를 실행하세요.
+- [발표 슬라이드](slides/): **현재 발표 자료는 데모 영상 32편이 들어 있는 45장 녹화 덱**입니다. 원본은 저장소의 [국문 PPTX](slides/GHCP_in_the_Cloud_Demo_KO.pptx)와 [영문 PPTX](en/slides/GHCP_in_the_Cloud_Demo_EN.pptx)이며, 저장소를 clone하면 함께 받습니다. Office 웹 뷰어에서 [국문](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_KO.pptx) 또는 [영문](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_EN.pptx)을 열고 슬라이드의 ▶를 눌러 영상을 재생할 수도 있습니다. `Pages` 워크플로는 저장소의 PPTX를 GitHub Pages로 게시합니다. 수정·게시 절차는 [영상 안내](slides/VIDEO_GUIDE_KO.md)를 따르세요.
 - 영문판: 가이드와 발표 슬라이드는 [en/](en/README.md)에 있고, [영문 웹 페이지](https://junwoojeong100.github.io/ghcp-in-the-cloud/en/)에서 전체 데모 영상(약 24분, 1080p)을 볼 수 있습니다. 영상 파일 `ghcp-in-the-cloud-demo-en.mp4`는 같은 릴리스 `recorded-demo-slides`에 있고, 자막과 챕터 목록은 [`docs/en/`](docs/en/)에 있습니다.
 
 ## 원본과 연습용 저장소

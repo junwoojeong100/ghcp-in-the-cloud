@@ -196,9 +196,9 @@ infra/
   modules/            Shared Bicep modules (Foundry access permissions)
 scripts/              Deploy, canary, load, smoke test and cleanup scripts (bash)
 demos/                The Korean demo guide and helper files for each demo, 01–06
-slides/               The Korean presentation slides (PPTX), per-slide scripts (Markdown), generator script
-docs/                 GitHub Pages pages for the recorded demo, Korean and English (the PPTX and MP4 files are release assets)
-en/                   This English edition: guides, presentation slides, generator script
+slides/               The Korean 45-slide recorded-demo PPTX and presentation/recording guides
+docs/                 GitHub Pages pages (Korean/English; PPTX files come from the repository, the full MP4 from the release)
+en/                   This English edition: demo guides and the 45-slide recorded-demo PPTX
 .github/
   workflows/          ci, codeql, dependency-review, deploy-aca, deploy-aks, copilot-setup-steps, pages
   copilot-instructions.md, instructions/, prompts/, agents/    Copilot settings (Demo 1)
@@ -217,17 +217,17 @@ en/                   This English edition: guides, presentation slides, generat
 
 ## Slides and guides
 
-All English material of this kit is listed here. The video and the recorded-demo slides are too large for git, so they are assets of the release [`recorded-demo-slides`](https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/tag/recorded-demo-slides), and the `Pages` workflow publishes them with the web page on GitHub Pages.
+All English material of this kit is listed here. The 45-slide PPTX files are part of this repository, so cloning it includes both language editions. The full English video remains an asset of the release [`recorded-demo-slides`](https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/tag/recorded-demo-slides). The `Pages` workflow copies the repository decks and downloads the video to publish them with the web page.
 
 | What | Where |
 |---|---|
 | Demo guides (Markdown) | [DEMO_GUIDE.md](DEMO_GUIDE.md): the full course (about 42 minutes), the Lite course (about 15 minutes), the checklist to complete before you present, and the timetable. [demos/](demos/): one guide per demo. |
-| Presentation slides for the live demos | [slides/](slides/): the presentation slides (`demo-presentation-en.pptx`, 37 slides, with speaker notes on every slide) and the per-slide script (`demo-presentation-en.md`). Each demo has four slides: value, demo flow, video and key code. `slides/build_deck.py` generates both files from the same data; see [slides/README.md](slides/README.md). This is a tool separate from the demo app, so you do not need it to run the demos. |
+| Presentation slides | **The current presentation is the 45-slide recorded-demo deck with 32 embedded videos**: [`en/slides/GHCP_in_the_Cloud_Demo_EN.pptx`](slides/GHCP_in_the_Cloud_Demo_EN.pptx). See [slides/](slides/) and the [recording guide](slides/VIDEO_GUIDE.md) for how to use, update and publish it. |
 | Recorded demo: web page (HTML) | [junwoojeong100.github.io/ghcp-in-the-cloud/en/](https://junwoojeong100.github.io/ghcp-in-the-cloud/en/) has the video player with a chapter list and the links to the slides. The source is [`docs/en/index.html`](../docs/en/index.html). |
 | Recorded demo: video | `ghcp-in-the-cloud-demo-en.mp4`, about 24 minutes, 1080p: [watch it on the web page](https://junwoojeong100.github.io/ghcp-in-the-cloud/en/) or [download it](https://github.com/junwoojeong100/ghcp-in-the-cloud/releases/download/recorded-demo-slides/ghcp-in-the-cloud-demo-en.mp4). The English captions are part of the picture. The same text as a transcript ([`.srt`](../docs/en/ghcp-in-the-cloud-demo-en.srt)) and the [chapter list](../docs/en/ghcp-in-the-cloud-demo-en.chapters.txt) are in `docs/en/`. |
-| Recorded demo: slides | 45 slides with the 32 demo videos embedded: [open them in the Office web viewer](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_EN.pptx) (press ▶ on a slide to play its video) or [download the PPTX](https://junwoojeong100.github.io/ghcp-in-the-cloud/GHCP_in_the_Cloud_Demo_EN.pptx). The [Korean deck](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_KO.pptx) is in the same release. |
+| Recorded demo: slides on the web | 45 slides with the 32 demo videos embedded: [open them in the Office web viewer](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_EN.pptx) (press ▶ on a slide to play its video) or [download the published PPTX](https://junwoojeong100.github.io/ghcp-in-the-cloud/GHCP_in_the_Cloud_Demo_EN.pptx). The [Korean deck](https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fjunwoojeong100.github.io%2Fghcp-in-the-cloud%2FGHCP_in_the_Cloud_Demo_KO.pptx) comes from [`slides/GHCP_in_the_Cloud_Demo_KO.pptx`](../slides/GHCP_in_the_Cloud_Demo_KO.pptx). |
 
-To replace a file of the recorded demo, upload the new file to the release with `gh release upload recorded-demo-slides <file> --clobber` and run the `Pages` workflow again.
+To update the slides, edit the repository PPTX files and submit them in a PR. After review and merge to `main`, `Pages` publishes them automatically. The [recording guide](slides/VIDEO_GUIDE.md) explains the process and how the full-video release asset differs.
 
 ## Source repository and practice repositories
 

@@ -19,9 +19,10 @@ applyTo: 'en/**/*.md'
   7. `## Troubleshooting`
   8. `## Using it with other demos` (optional integrations only; never require another demo)
 - In `## Demo steps`, number every step, give the exact command or click, and end each step with a `Success criteria:` line that says what the audience should see.
-- Every command, path, script and env var in a document must exist in the repo or be created by a documented step. Check with `ls` or `grep` before finishing. Paths in prose are repository-root paths (for example `scripts/deploy-aca.sh` or `en/slides/build_deck.py`), and every relative Markdown link must resolve from the file that contains it.
+- Every command, path, script and env var in a document must exist in the repo or be created by a documented step. Check with `ls` or `grep` before finishing. Paths in prose are repository-root paths (for example `scripts/deploy-aca.sh` or `en/slides/README.md`), and every relative Markdown link must resolve from the file that contains it.
 - The app and the scripts in this repository print Korean. Quote their labels and messages in Korean with an English gloss, and keep the table in `en/README.md` ("Language of the app and the scripts") up to date.
 - Do not state benchmark numbers, prices, SLAs or "x% faster". Describe features qualitatively. Say "Portal menu names may change." once per document instead of hedging every step.
 - No secrets or token-shaped strings, no `TODO` text and no invented URLs. Use `<owner>`-style placeholders only where unavoidable, and say so.
-- `en/slides/demo-presentation-en.pptx` and `en/slides/demo-presentation-en.md` are generated: edit the data in `en/slides/build_deck.py` and run `python en/slides/build_deck.py` instead of editing the outputs.
+- The current presentation is the 45-slide recorded-demo deck with 32 embedded videos. The canonical PPTX files are tracked at `en/slides/GHCP_in_the_Cloud_Demo_EN.pptx` and `slides/GHCP_in_the_Cloud_Demo_KO.pptx`. Link to those files for repository downloads, and keep the GitHub Pages URLs for the Office web viewer.
+- Edit the PPTX files directly and include the reviewed changes in a PR. Changes to either file on `main` trigger `Pages`, which copies the repository decks into the site root. The full English MP4 remains an asset of the `recorded-demo-slides` release (see `en/slides/VIDEO_GUIDE.md`).
 - `en/demos/01-github-copilot/issues/*.md` are English versions of the issue bodies, not guides: they start with a `# [Demo] ...` title line, like the Korean files.
